@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -7,25 +6,21 @@ using UnityEngine.SceneManagement;
 
 public class UIManagment : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _categoryText;
+    [SerializeField] private TextMeshProUGUI _questionText;
+    [SerializeField] public Button[] _buttons;
 
-    
-    [SerializeField] TextMeshProUGUI _categoryText;
-    [SerializeField] TextMeshProUGUI _questionText;
-    
-    string _correctAnswer;
+    public TextMeshProUGUI CategoryText => _categoryText;
+    public TextMeshProUGUI QuestionText => _questionText;
+    public Button[] Buttons => _buttons;
 
-    public Button[] _buttons = new Button[3];
-
-    [SerializeField] Button _backButton;
-
-    private List<string> _answers = new List<string>();
-
-    public bool queryCalled;
-
+    private string _correctAnswer;
     private Color _originalButtonColor;
+    private bool isLoadingQuestion = false;
 
     public static UIManagment Instance { get; private set; }
 
+    public bool queryCalled;
 
     void Awake()
     {
@@ -39,52 +34,53 @@ public class UIManagment : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
-
 
     private void Start()
     {
-        queryCalled = false;
-
         _originalButtonColor = _buttons[0].GetComponent<Image>().color;
-
-    }
-
-    void Update()
-    {
-        _categoryText.text = PlayerPrefs.GetString("SelectedTrivia");
-        _questionText.text = GameManager.Instance.responseList[GameManager.Instance.randomQuestionIndex].QuestionText;
-
-        GameManager.Instance.CategoryAndQuestionQuery(queryCalled);
-
+        GameManager.Instance.answeredQuestions.Clear();
+        LoadNextQuestion();
     }
     public void OnButtonClick(int buttonIndex)
     {
-        
-        string selectedAnswer = _buttons[buttonIndex].GetComponentInChildren<TextMeshProUGUI>().text;
+        if (isLoadingQuestion) return; // Evita procesar clics mientras se carga una nueva pregunta
 
-        _correctAnswer = GameManager.Instance.responseList[GameManager.Instance.randomQuestionIndex].CorrectOption;
+        string selectedAnswer = Buttons[buttonIndex].GetComponentInChildren<TextMeshProUGUI>().text;
+        bool isCorrect = selectedAnswer == GameManager.Instance.GetCorrectAnswer();
 
-        if (selectedAnswer == _correctAnswer)
+        // Desactiva los botones para evitar más clics
+        foreach (Button button in Buttons)
         {
-            Debug.Log("�Respuesta correcta!");
+            button.interactable = false;
+        }
+
+        if (isCorrect)
+        {
+            Debug.Log("Respuesta correcta!");
             ChangeButtonColor(buttonIndex, Color.green);
-            Invoke("RestoreButtonColor", 2f);
-            GameManager.Instance._answers.Clear();
-            Invoke("NextAnswer", 2f);
-            
+            Invoke("HandleCorrectAnswer", 2f);
         }
         else
         {
-            Debug.Log("Respuesta incorrecta. Int�ntalo de nuevo.");
-            
+            Debug.Log("Respuesta incorrecta. Inténtalo de nuevo.");
             ChangeButtonColor(buttonIndex, Color.red);
-            Invoke("RestoreButtonColor", 2f);
+            Invoke("HandleIncorrectAnswer", 2f);
         }
-
-
     }
+    private void HandleCorrectAnswer()
+    {
+        RestoreButtonColor();
+        GameManager.Instance._answers.Clear();
+        LoadNextQuestion(); // Carga la siguiente pregunta
+    }
+
+    private void HandleIncorrectAnswer()
+    {
+        RestoreButtonColor();
+        CallGameOver(); // Finaliza el juego
+    }
+
 
     private void ChangeButtonColor(int buttonIndex, Color color)
     {
@@ -101,18 +97,71 @@ public class UIManagment : MonoBehaviour
         }
     }
 
-    private void NextAnswer()
+    public void LoadNextQuestion()
     {
-        queryCalled = false;
+        if (GameManager.Instance.HasMoreQuestions())
+        {
+            Debug.Log("Loading next question...");
+            GameManager.Instance.CategoryAndQuestionQuery();
+
+        }
+        else
+        {
+            Debug.Log("No hay más preguntas disponibles.");
+
+            CallGameOver();
+        }
     }
+
+
 
     public void PreviousScene()
     {
+        GameManager.Instance.ResetQuestions();
         Destroy(GameManager.Instance);
         Destroy(UIManagment.Instance);
-
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 
+    public void UpdateUI(question selectedQuestion, List<string> answers)
+    {
+        if (Buttons == null || Buttons.Length == 0)
+        {
+            Debug.LogError("Buttons array is null or empty.");
+            return;
+        }
+
+        CategoryText.text = PlayerPrefs.GetString("SelectedTrivia");
+        QuestionText.text = selectedQuestion.QuestionText;
+
+        for (int i = 0; i < Buttons.Length; i++)
+        {
+            if (i < answers.Count)
+            {
+                if (Buttons[i] != null)
+                {
+                    Buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = answers[i];
+                    Buttons[i].onClick.RemoveAllListeners();
+                    int index = i;
+                    Buttons[i].onClick.AddListener(() => OnButtonClick(index));
+                    Buttons[i].gameObject.SetActive(true); // Asegúrate de que el botón esté activo
+                    Buttons[i].interactable = true;
+                }
+                else
+                {
+                    Debug.LogWarning($"Button at index {i} is null.");
+                }
+            }
+            else
+            {
+                Buttons[i].gameObject.SetActive(false); // Oculta el botón si no hay suficientes respuestas
+            }
+        }
+    }
+
+    private void CallGameOver()
+    {
+        GameManager.Instance.GameOver();
+    }
 
 }

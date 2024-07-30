@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    //public TriviaManager triviaManager;
-
-    public List<question> responseList; //lista donde guardo la respuesta de la query hecha en la pantalla de selección de categoría
+    public List<question> responseList; // Lista de preguntas
+    public List<int> answeredQuestions = new List<int>();
 
     public int currentTriviaIndex = 0;
-
     public int randomQuestionIndex = 0;
 
     public List<string> _answers = new List<string>();
@@ -17,93 +16,91 @@ public class GameManager : MonoBehaviour
     public bool queryCalled;
 
     private int _points;
-
     private int _maxAttempts = 10;
-
     public int _numQuestionAnswered = 0;
-
-    string _correctAnswer;
+    public string _correctAnswer;
 
     public static GameManager Instance { get; private set; }
 
-
     void Awake()
     {
-        // Configura la instancia
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Para mantener el objeto entre escenas
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
-
     }
-
 
     void Start()
     {
-
-        StartTrivia();
-
+        answeredQuestions.Clear();
         queryCalled = false;
+        //responseList = new List<question>();
+        Debug.Log($"answeredQuestions inicial: {answeredQuestions.Count}");
 
     }
 
-    void StartTrivia()
+    public void CategoryAndQuestionQuery()
     {
-        // Cargar la trivia desde la base de datos
-        //triviaManager.LoadTrivia(currentTriviaIndex);
-
-        //print(responseList.Count);
-
-    }
-
-    public void CategoryAndQuestionQuery(bool isCalled)
-    {
-        isCalled = UIManagment.Instance.queryCalled;
-
-        if (!isCalled)
+        if (responseList.Count == answeredQuestions.Count)
         {
+            Debug.Log("Todas las preguntas han sido respondidas.");
+            Debug.Log($"responseList.Count: {responseList.Count}, answeredQuestions.Count: {answeredQuestions.Count}");
+            GameOver();
+            return;
+        }
 
-            randomQuestionIndex = Random.Range(0, GameManager.Instance.responseList.Count);
+        int randomQuestionIndex;
+        do
+        {
+            randomQuestionIndex = Random.Range(0, responseList.Count);
+        }
+        while (answeredQuestions.Contains(randomQuestionIndex));
 
-            //_questionText.text = GameManager.Instance.responseList[randomQuestionIndex].QuestionText;
-            _correctAnswer = GameManager.Instance.responseList[randomQuestionIndex].CorrectOption;
+        answeredQuestions.Add(randomQuestionIndex);
 
-            //agrego a la lista de answers las 3 answers
+        question selectedQuestion = responseList[randomQuestionIndex];
+        _answers.Clear();
+        _answers.Add(selectedQuestion.Answer1);
+        _answers.Add(selectedQuestion.Answer2);
+        _answers.Add(selectedQuestion.Answer3);
 
-            _answers.Add(GameManager.Instance.responseList[randomQuestionIndex].Answer1);
-            _answers.Add(GameManager.Instance.responseList[randomQuestionIndex].Answer2);
-            _answers.Add(GameManager.Instance.responseList[randomQuestionIndex].Answer3);
+        _answers.Shuffle();
+        _correctAnswer = selectedQuestion.CorrectOption;
 
-            // la mixeo con el método Shuffle (ver script Shuffle List)
-
-            _answers.Shuffle();
-
-            // asigno estos elementos a los textos de los botones
-
-            for (int i = 0; i < UIManagment.Instance._buttons.Length; i++)
-            {
-                UIManagment.Instance._buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = _answers[i];
-
-                int index = i; // Captura el valor actual de i en una variable local -- SINO NO FUNCA!
-
-                UIManagment.Instance._buttons[i].onClick.AddListener(() => UIManagment.Instance.OnButtonClick(index));
-            }
-
-
-            UIManagment.Instance.queryCalled = true;
+        // Actualiza UIManagment solo con la pregunta y respuestas
+        if (UIManagment.Instance != null)
+        {
+            UIManagment.Instance.UpdateUI(selectedQuestion, _answers);
         }
 
     }
 
 
-    private void Update()
+
+
+    public void ResetQuestions()
     {
-        
+        answeredQuestions.Clear();
+    }
+
+    public string GetCorrectAnswer()
+    {
+        return _correctAnswer;
+    }
+
+    public bool HasMoreQuestions()
+    {
+        return answeredQuestions.Count < responseList.Count;
+    }
+
+    public void GameOver()
+    {
+        SceneManager.LoadScene("GameOver");
     }
 }
 
