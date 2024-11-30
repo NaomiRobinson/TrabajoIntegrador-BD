@@ -21,8 +21,9 @@ public class question : BaseModel
     [Column("correct_answer")]
     public string CorrectOption { get; set; }
 
+    [Column("trivia_id")]
     public int trivia_id { get; set; }
 
-    public trivia trivia {get; set; }
+    public trivia trivia { get; set; }
 
 }

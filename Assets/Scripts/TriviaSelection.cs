@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 
 public class TriviaSelection : MonoBehaviour
 {
-    string supabaseUrl = "https://syrwwatmmjbsiyypndgd.supabase.co"; //COMPLETAR
-    string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5cnd3YXRtbWpic2l5eXBuZGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAwMjQ1OTUsImV4cCI6MjAzNTYwMDU5NX0.ogHLM4S-9PLIeCJgVWhUY8_ge2gQMooUNKr-J5QTXVA"; //COMPLETAR
+    string supabaseUrl = "https://dxnralwsjyajjuvtklyh.supabase.co";
+    string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4bnJhbHdzanlhamp1dnRrbHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTEyMjEsImV4cCI6MjA0ODIyNzIyMX0.ycX6tcetKLqeTYggvN4VDE6WGo2tZDSQ_1xoD12lTwA";
 
     Supabase.Client clientSupabase;
 

@@ -36,12 +36,18 @@ public class UIManagment : MonoBehaviour
         }
     }
 
-    private void Start()
+   private void Start()
+{
+    if (GameManager.Instance == null)
     {
-        _originalButtonColor = _buttons[0].GetComponent<Image>().color;
-        GameManager.Instance.answeredQuestions.Clear();
-        LoadNextQuestion();
+        Debug.LogError("GameManager no está inicializado.");
+        return; // Salir si GameManager no está listo
     }
+
+    _originalButtonColor = _buttons[0].GetComponent<Image>().color;
+    GameManager.Instance.answeredQuestions.Clear();
+    LoadNextQuestion();
+}
     public void OnButtonClick(int buttonIndex)
     {
         if (isLoadingQuestion) return; // Evita procesar clics mientras se carga una nueva pregunta

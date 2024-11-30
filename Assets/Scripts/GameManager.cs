@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
 public class GameManager : MonoBehaviour
 {
     public List<question> responseList; // Lista de preguntas
@@ -16,7 +15,6 @@ public class GameManager : MonoBehaviour
     public bool queryCalled;
 
     private int _points;
-    private int _maxAttempts = 10;
     public int _numQuestionAnswered = 0;
     public string _correctAnswer;
 
@@ -39,7 +37,6 @@ public class GameManager : MonoBehaviour
     {
         answeredQuestions.Clear();
         queryCalled = false;
-        //responseList = new List<question>();
         Debug.Log($"answeredQuestions inicial: {answeredQuestions.Count}");
 
     }
@@ -79,7 +76,6 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
 
 
 

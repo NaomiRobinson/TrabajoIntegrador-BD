@@ -699,11 +699,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef615ad77b9f6ad4aa2f2b90521cb060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  answeredQuestions: 
   currentTriviaIndex: 0
   randomQuestionIndex: 0
   _answers: []
   queryCalled: 0
   _numQuestionAnswered: 0
+  _correctAnswer: 
 --- !u!4 &440389291
 Transform:
   m_ObjectHideFlags: 0
