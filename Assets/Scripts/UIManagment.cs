@@ -123,7 +123,7 @@ public class UIManagment : MonoBehaviour
 
     public void PreviousScene()
     {
-        GameManager.Instance.ResetQuestions();
+        
         Destroy(GameManager.Instance);
         Destroy(UIManagment.Instance);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);

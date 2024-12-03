@@ -79,11 +79,6 @@ public class GameManager : MonoBehaviour
 
 
 
-    public void ResetQuestions()
-    {
-        answeredQuestions.Clear();
-    }
-
     public string GetCorrectAnswer()
     {
         return _correctAnswer;

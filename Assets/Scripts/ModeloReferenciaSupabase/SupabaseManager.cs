@@ -6,6 +6,7 @@ using Postgrest.Models;
 using TMPro;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class SupabaseManager : MonoBehaviour
 
@@ -16,12 +17,11 @@ public class SupabaseManager : MonoBehaviour
     [SerializeField] TMP_InputField _userPassInput;
     [SerializeField] TextMeshProUGUI _stateText;
 
-    string supabaseUrl = "url"; //COMPLETAR
-    string supabaseKey = "key"; //COMPLETAR
+    string supabaseUrl = "https://dxnralwsjyajjuvtklyh.supabase.co";
+    string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4bnJhbHdzanlhamp1dnRrbHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTEyMjEsImV4cCI6MjA0ODIyNzIyMX0.ycX6tcetKLqeTYggvN4VDE6WGo2tZDSQ_1xoD12lTwA";
 
     Supabase.Client clientSupabase;
 
-    private usuarios _usuarios = new usuarios();
 
 
     public async void UserLogin()
@@ -31,19 +31,20 @@ public class SupabaseManager : MonoBehaviour
 
         // prueba
         var test_response = await clientSupabase
-            .From<usuarios>()
+            .From<users>()
             .Select("*")
             .Get();
         Debug.Log(test_response.Content);
 
 
 
-        // filtro según datos de login
+        // filtro segï¿½n datos de login
         var login_password = await clientSupabase
-          .From<usuarios>()
+          .From<users>()
           .Select("password")
-          .Where(usuarios => usuarios.username == _userIDInput.text)
+          .Where(users => users.username == _userIDInput.text)
           .Get();
+
 
 
         if (login_password.Model.password.Equals(_userPassInput.text))
@@ -51,6 +52,7 @@ public class SupabaseManager : MonoBehaviour
             print("LOGIN SUCCESSFUL");
             _stateText.text = "LOGIN SUCCESSFUL";
             _stateText.color = Color.green;
+            SceneManager.LoadScene("TriviaSelectScene");
         }
         else
         {
@@ -62,54 +64,55 @@ public class SupabaseManager : MonoBehaviour
 
     public async void InsertarNuevoUsuario()
     {
-
         // Initialize the Supabase client
         clientSupabase = new Supabase.Client(supabaseUrl, supabaseKey);
 
-        // Consultar el último id utilizado (ID = index)
+        // Consultar el Ãºltimo id utilizado (ID = index)
         var ultimoId = await clientSupabase
-            .From<usuarios>()
+            .From<users>()
             .Select("id")
-            .Order(usuarios => usuarios.id, Postgrest.Constants.Ordering.Descending) // Ordenar en orden descendente para obtener el último id
+            .Order(users => users.id, Postgrest.Constants.Ordering.Descending)
             .Get();
 
-        int nuevoId = 1; // Valor predeterminado si la tabla está vacía
+        int nuevoId = 1;
 
-        if (ultimoId != null)
+        if (ultimoId.Model != null)
         {
-            nuevoId = ultimoId.Model.id + 1; // Incrementar el último id
+
+            nuevoId = ultimoId.Model.id + 1;
         }
 
-        // Crear el nuevo usuario con el nuevo id
-        var nuevoUsuario = new usuarios
-        {
 
+        // Crear el nuevo usuario con el nuevo id
+        var nuevoUsuario = new users
+        {
             id = nuevoId,
             username = _userIDInput.text,
-            age = Random.Range(0, 100), //luego creo el campo que falta en la UI
+            age = Random.Range(0, 100), // Luego creo el campo que falta en la UI
             password = _userPassInput.text,
         };
 
-
         // Insertar el nuevo usuario
         var resultado = await clientSupabase
-            .From<usuarios>()
+            .From<users>()
             .Insert(new[] { nuevoUsuario });
 
-
-        //verifico el estado de la inserción 
-        if (resultado.ResponseMessage.IsSuccessStatusCode)
+        // Verificar el estado de la inserciÃ³n
+        if (resultado != null && resultado.ResponseMessage != null && resultado.ResponseMessage.IsSuccessStatusCode)
         {
             _stateText.text = "Usuario Correctamente Ingresado";
             _stateText.color = Color.green;
+            SceneManager.LoadScene("TriviaSelectScene");
         }
         else
         {
             _stateText.text = "Error en el registro de usuario";
-            _stateText.text = resultado.ResponseMessage.ToString();
-            _stateText.color = Color.green;
+            if (resultado != null && resultado.ResponseMessage != null)
+            {
+                _stateText.text += "\n" + resultado.ResponseMessage.ToString();
+            }
+            _stateText.color = Color.red;
         }
-
     }
 }
 

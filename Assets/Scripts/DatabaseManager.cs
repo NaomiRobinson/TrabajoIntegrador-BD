@@ -18,7 +18,7 @@ public class DatabaseManager : MonoBehaviour
 
         index = PlayerPrefs.GetInt("SelectedIndex");
 
-    
+
 
         await LoadTriviaData(index);
     }
@@ -42,7 +42,7 @@ public class DatabaseManager : MonoBehaviour
             return;
         }
 
-
+       
 
         GameManager.Instance.currentTriviaIndex = index;
         GameManager.Instance.responseList = response.Models;
@@ -55,4 +55,4 @@ public class DatabaseManager : MonoBehaviour
         UIManagment.Instance.LoadNextQuestion();
 
     }
-} 
+}
