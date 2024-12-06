@@ -17,8 +17,9 @@ public class GameManager : MonoBehaviour
     private int _points;
     public int _numQuestionAnswered = 0;
     public string _correctAnswer;
-
     public static GameManager Instance { get; private set; }
+
+    public bool waitingForNext = false;
 
     void Awake()
     {
@@ -46,7 +47,6 @@ public class GameManager : MonoBehaviour
         if (responseList.Count == answeredQuestions.Count)
         {
             Debug.Log("Todas las preguntas han sido respondidas.");
-            Debug.Log($"responseList.Count: {responseList.Count}, answeredQuestions.Count: {answeredQuestions.Count}");
             GameOver();
             return;
         }
@@ -73,7 +73,9 @@ public class GameManager : MonoBehaviour
         if (UIManagment.Instance != null)
         {
             UIManagment.Instance.UpdateUI(selectedQuestion, _answers);
+            UIManagment.Instance.ShowNextButton(false);
         }
+         waitingForNext = false;
 
     }
 

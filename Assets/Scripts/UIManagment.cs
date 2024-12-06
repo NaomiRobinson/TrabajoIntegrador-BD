@@ -9,6 +9,9 @@ public class UIManagment : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _categoryText;
     [SerializeField] private TextMeshProUGUI _questionText;
     [SerializeField] public Button[] _buttons;
+    [SerializeField] private Button _nextButton;
+
+    [SerializeField] private Button _backButton;
 
     public TextMeshProUGUI CategoryText => _categoryText;
     public TextMeshProUGUI QuestionText => _questionText;
@@ -34,20 +37,29 @@ public class UIManagment : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
-
-   private void Start()
-{
-    if (GameManager.Instance == null)
+        if (_nextButton != null)
+        {
+            _nextButton.onClick.AddListener(LoadNextQuestion);
+        }
+        if (_backButton != null)
     {
-        Debug.LogError("GameManager no está inicializado.");
-        return; // Salir si GameManager no está listo
+        _backButton.gameObject.SetActive(true); 
+    }
+        _backButton.onClick.AddListener(PreviousScene);
     }
 
-    _originalButtonColor = _buttons[0].GetComponent<Image>().color;
-    GameManager.Instance.answeredQuestions.Clear();
-    LoadNextQuestion();
-}
+    private void Start()
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogError("GameManager no está inicializado.");
+            return; // Salir si GameManager no está listo
+        }
+
+        _originalButtonColor = _buttons[0].GetComponent<Image>().color;
+        GameManager.Instance.answeredQuestions.Clear();
+        LoadNextQuestion();
+    }
     public void OnButtonClick(int buttonIndex)
     {
         if (isLoadingQuestion) return; // Evita procesar clics mientras se carga una nueva pregunta
@@ -78,7 +90,7 @@ public class UIManagment : MonoBehaviour
     {
         RestoreButtonColor();
         GameManager.Instance._answers.Clear();
-        LoadNextQuestion(); // Carga la siguiente pregunta
+        ShowNextButton(true);
     }
 
     private void HandleIncorrectAnswer()
@@ -103,12 +115,21 @@ public class UIManagment : MonoBehaviour
         }
     }
 
+    public void ShowNextButton(bool show)
+    {
+        if (_nextButton != null)
+        {
+            _nextButton.gameObject.SetActive(show); // Muestra o esconde el botón
+        }
+    }
+
     public void LoadNextQuestion()
     {
         if (GameManager.Instance.HasMoreQuestions())
         {
             Debug.Log("Loading next question...");
             GameManager.Instance.CategoryAndQuestionQuery();
+            ShowNextButton(false);
 
         }
         else
@@ -123,7 +144,7 @@ public class UIManagment : MonoBehaviour
 
     public void PreviousScene()
     {
-        
+
         Destroy(GameManager.Instance);
         Destroy(UIManagment.Instance);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
