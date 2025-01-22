@@ -841,7 +841,6 @@ RectTransform:
   - {fileID: 199656047}
   - {fileID: 1876814925}
   - {fileID: 1629442009}
-  - {fileID: 1489896633}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -995,7 +994,7 @@ GameObject:
   - component: {fileID: 297153497}
   - component: {fileID: 297153495}
   - component: {fileID: 297153493}
-  - component: {fileID: 297153496}
+  - component: {fileID: 297153498}
   m_Layer: 5
   m_Name: Dropdown
   m_TagString: Untagged
@@ -1109,7 +1108,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &297153496
+--- !u!222 &297153497
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 297153492}
+  m_CullTransparentMesh: 1
+--- !u!114 &297153498
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1124,14 +1131,6 @@ MonoBehaviour:
   ageDropdown: {fileID: 297153493}
   minAge: 1
   maxAge: 100
---- !u!222 &297153497
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 297153492}
-  m_CullTransparentMesh: 1
 --- !u!1 &361680083
 GameObject:
   m_ObjectHideFlags: 0
@@ -3063,6 +3062,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1219666841}
   m_CullTransparentMesh: 1
+--- !u!1 &1250936217
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1250936219}
+  - component: {fileID: 1250936218}
+  m_Layer: 0
+  m_Name: Dropdown
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1250936218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1250936217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d153ca034ffbf624aab3a30d1e411d64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ageDropdown: {fileID: 297153493}
+  minAge: 1
+  maxAge: 100
+--- !u!4 &1250936219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1250936217}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 550, y: 255.98935, z: -0.0014677007}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1297328064
 GameObject:
   m_ObjectHideFlags: 0
@@ -3454,11 +3500,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 262774078}
+  m_Father: {fileID: 1629442009}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 25.632446, y: -65.0918}
+  m_AnchoredPosition: {x: 0.000061035156, y: -60.708206}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1489896634
@@ -3877,13 +3923,14 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 297153494}
   - {fileID: 1752979914}
   - {fileID: 1482100352}
   - {fileID: 1219666842}
   - {fileID: 1139603137}
   - {fileID: 2009975369}
   - {fileID: 2072405071}
+  - {fileID: 1489896633}
+  - {fileID: 297153494}
   m_Father: {fileID: 262774078}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3929,53 +3976,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1629442008}
   m_CullTransparentMesh: 1
---- !u!1 &1631756554
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1631756556}
-  - component: {fileID: 1631756555}
-  m_Layer: 0
-  m_Name: AgeDropdown
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1631756555
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1631756554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d153ca034ffbf624aab3a30d1e411d64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ageDropdown: {fileID: 297153493}
-  minAge: 1
-  maxAge: 100
---- !u!4 &1631756556
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1631756554}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 538.59796, y: 196.43347, z: -1.6101801}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1641061233
 GameObject:
   m_ObjectHideFlags: 0
@@ -5966,4 +5966,4 @@ SceneRoots:
   - {fileID: 550530753}
   - {fileID: 262774078}
   - {fileID: 767131938}
-  - {fileID: 1631756556}
+  - {fileID: 1250936219}

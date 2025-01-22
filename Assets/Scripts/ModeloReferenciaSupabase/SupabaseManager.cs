@@ -28,6 +28,7 @@ public class SupabaseManager : MonoBehaviour
     void Start()
     {
         clientSupabase = new Supabase.Client(supabaseUrl, supabaseKey);
+        
     }
 
     public async void UserLogin()
@@ -141,7 +142,7 @@ public class SupabaseManager : MonoBehaviour
             id = nuevoId,
             username = _signUpUserIDInput.text,
             age = selectedAge,
-            password = _signUpUserIDInput.text,
+            password = _signUpUserPassInput.text,
         };
 
         // Insertar el nuevo usuario

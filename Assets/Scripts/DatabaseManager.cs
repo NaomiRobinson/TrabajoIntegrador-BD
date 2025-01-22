@@ -42,7 +42,6 @@ public class DatabaseManager : MonoBehaviour
             return;
         }
 
-       
 
         GameManager.Instance.currentTriviaIndex = index;
         GameManager.Instance.responseList = response.Models;

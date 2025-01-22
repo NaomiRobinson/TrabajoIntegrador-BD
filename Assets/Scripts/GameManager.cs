@@ -75,11 +75,15 @@ public class GameManager : MonoBehaviour
             UIManagment.Instance.UpdateUI(selectedQuestion, _answers);
             UIManagment.Instance.ShowNextButton(false);
         }
-         waitingForNext = false;
+        waitingForNext = false;
+
+        Timer timer = FindObjectOfType<Timer>();
+        if (timer != null)
+        {
+            timer.ResetTimer();
+        }
 
     }
-
-
 
     public string GetCorrectAnswer()
     {
@@ -95,5 +99,14 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("GameOver");
     }
+
+    public void TimeUp()
+    {
+        Debug.Log("El tiempo se ha agotado.");
+
+        GameOver();
+    }
+
+
 }
 

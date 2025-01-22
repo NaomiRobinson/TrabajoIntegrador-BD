@@ -11,6 +11,7 @@ public class AgeDropdown : MonoBehaviour
 
     void Start()
     {
+        
         FillAgesDropdown();
     }
 

@@ -10,8 +10,8 @@ public class UIManagment : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _questionText;
     [SerializeField] public Button[] _buttons;
     [SerializeField] private Button _nextButton;
-
     [SerializeField] private Button _backButton;
+    [SerializeField] private Timer timer;
 
     public TextMeshProUGUI CategoryText => _categoryText;
     public TextMeshProUGUI QuestionText => _questionText;
@@ -42,9 +42,9 @@ public class UIManagment : MonoBehaviour
             _nextButton.onClick.AddListener(LoadNextQuestion);
         }
         if (_backButton != null)
-    {
-        _backButton.gameObject.SetActive(true); 
-    }
+        {
+            _backButton.gameObject.SetActive(true);
+        }
         _backButton.onClick.AddListener(PreviousScene);
     }
 
@@ -77,13 +77,17 @@ public class UIManagment : MonoBehaviour
         {
             Debug.Log("Respuesta correcta!");
             ChangeButtonColor(buttonIndex, Color.green);
-            Invoke("HandleCorrectAnswer", 2f);
+            if (timer != null)
+            {
+                timer.PauseTimer();
+            }
+            Invoke("HandleCorrectAnswer", 0.5f);
         }
         else
         {
             Debug.Log("Respuesta incorrecta. Inténtalo de nuevo.");
             ChangeButtonColor(buttonIndex, Color.red);
-            Invoke("HandleIncorrectAnswer", 2f);
+            Invoke("HandleIncorrectAnswer", 0.5f);
         }
     }
     private void HandleCorrectAnswer()
@@ -96,7 +100,7 @@ public class UIManagment : MonoBehaviour
     private void HandleIncorrectAnswer()
     {
         RestoreButtonColor();
-        CallGameOver(); // Finaliza el juego
+        CallGameOver();
     }
 
 
@@ -119,7 +123,7 @@ public class UIManagment : MonoBehaviour
     {
         if (_nextButton != null)
         {
-            _nextButton.gameObject.SetActive(show); // Muestra o esconde el botón
+            _nextButton.gameObject.SetActive(show);
         }
     }
 
@@ -130,6 +134,11 @@ public class UIManagment : MonoBehaviour
             Debug.Log("Loading next question...");
             GameManager.Instance.CategoryAndQuestionQuery();
             ShowNextButton(false);
+
+            if (timer != null)
+            {
+                timer.ResetTimer();
+            }
 
         }
         else
@@ -181,7 +190,7 @@ public class UIManagment : MonoBehaviour
             }
             else
             {
-                Buttons[i].gameObject.SetActive(false); // Oculta el botón si no hay suficientes respuestas
+                Buttons[i].gameObject.SetActive(false);
             }
         }
     }
