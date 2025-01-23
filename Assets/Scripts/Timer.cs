@@ -6,14 +6,16 @@ using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
-    [SerializeField] private float countdownTime = 10f;
+    [SerializeField] private float maxTime = 10f;
     [SerializeField] private TextMeshProUGUI timerText;
+
+    public static Timer Instance { get; private set; }
     private float currentTime;
     private bool countingDown = false;
 
     void Start()
     {
-        currentTime = countdownTime;
+        currentTime = maxTime;
         countingDown = true;
     }
     // Update is called once per frame
@@ -44,12 +46,32 @@ public class Timer : MonoBehaviour
 
     public void ResetTimer()
     {
-        currentTime = countdownTime;
+        currentTime = maxTime;
         countingDown = true;
     }
 
     public void PauseTimer()
     {
         countingDown = false;
+        int timeLeft = Mathf.Max(0, Mathf.CeilToInt(currentTime));
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.CalculateScore(timeLeft, (int)maxTime);
+        }
+        else
+        {
+            Debug.LogError("ScoreManager.Instance es null. Asegúrate de que ScoreManager esté correctamente inicializado.");
+        }
     }
+
+    public float GetMaxTime()
+    {
+        return maxTime;
+    }
+
+    public float GetCurrentTime()
+    {
+        return currentTime;
+    }
+
 }

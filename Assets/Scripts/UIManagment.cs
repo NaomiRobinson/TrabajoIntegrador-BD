@@ -13,17 +13,20 @@ public class UIManagment : MonoBehaviour
     [SerializeField] private Button _backButton;
     [SerializeField] private Timer timer;
 
+    //[SerializeField] private TextMeshProUGUI scoreText;
+
     public TextMeshProUGUI CategoryText => _categoryText;
     public TextMeshProUGUI QuestionText => _questionText;
     public Button[] Buttons => _buttons;
+
+    public static UIManagment Instance { get; private set; }
+
+    public bool queryCalled;
 
     private string _correctAnswer;
     private Color _originalButtonColor;
     private bool isLoadingQuestion = false;
 
-    public static UIManagment Instance { get; private set; }
-
-    public bool queryCalled;
 
     void Awake()
     {
@@ -82,6 +85,7 @@ public class UIManagment : MonoBehaviour
                 timer.PauseTimer();
             }
             Invoke("HandleCorrectAnswer", 0.5f);
+            
         }
         else
         {
@@ -199,5 +203,13 @@ public class UIManagment : MonoBehaviour
     {
         GameManager.Instance.GameOver();
     }
+
+    // public void UpdateScoreUI()
+    //{
+
+    //    scoreText.text = "Puntaje: " + ScoreManager.Instance.totalScore.ToString();
+    //}
+
+    
 
 }
