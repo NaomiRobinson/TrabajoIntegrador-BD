@@ -21,14 +21,32 @@ public class SupabaseManager : MonoBehaviour
     [SerializeField] TMP_Dropdown _ageDropdown;
     [SerializeField] GameObject signUpPopUp;
 
+    public static SupabaseManager Instance { get; private set; }
+
+    public static int CurrentUserId { get; private set; }
+    public static int NewAttemptId { get; private set; }
+
     string supabaseUrl = "https://dxnralwsjyajjuvtklyh.supabase.co";
     string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4bnJhbHdzanlhamp1dnRrbHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTEyMjEsImV4cCI6MjA0ODIyNzIyMX0.ycX6tcetKLqeTYggvN4VDE6WGo2tZDSQ_1xoD12lTwA";
 
     Supabase.Client clientSupabase;
-    void Start()
+
+
+    void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            Debug.Log("Instancia de SupabaseManager creada.");
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        DontDestroyOnLoad(gameObject);
         clientSupabase = new Supabase.Client(supabaseUrl, supabaseKey);
-        
+
     }
 
     public async void UserLogin()
@@ -60,11 +78,16 @@ public class SupabaseManager : MonoBehaviour
           .Get();
 
 
-        if (login_password.Model.password.Equals(_loginUserPassInput.text))
+        if (string.Equals(login_password.Model.password, _loginUserPassInput.text))
         {
             print("LOGIN SUCCESSFUL");
             _stateText.text = "LOGIN SUCCESSFUL";
             _stateText.color = Color.green;
+
+            CurrentUserId = existingUser.Models[0].id;
+
+            //PlayerPrefs.SetInt("user_id", existingUser.Models[0].id);
+            //PlayerPrefs.Save();
 
             SceneManager.LoadScene("TriviaSelectScene");
         }
@@ -155,7 +178,56 @@ public class SupabaseManager : MonoBehaviour
         {
             _stateText.text = "Usuario Correctamente Ingresado";
             _stateText.color = Color.green;
-            SceneManager.LoadScene("TriviaSelectScene");
+        }
+    }
+
+    public async void SaveAttempt(int id, int userId, int triviaId, int score, int correct_answercount, float time)
+    {
+        Debug.Log($"Intentando guardar intento: userId={userId}, triviaId={triviaId}, score={score}, correct_answercount={correct_answercount}, time={time}");
+
+        if (userId == 0 || triviaId == 0)
+        {
+            Debug.LogError("User ID o Trivia ID no disponibles.");
+            return;
+        }
+
+        var lastAttemptId = await clientSupabase
+        .From<attempt>()
+        .Select("id")
+        .Order(attempt => attempt.id, Postgrest.Constants.Ordering.Descending)
+        .Get();
+
+        int NewAttemptId = 1;
+
+
+        if (lastAttemptId.Models.Count > 0 && lastAttemptId.Models[0] != null)
+        {
+            NewAttemptId = lastAttemptId.Models[0].id + 1;
+        }
+
+        // Crear un nuevo intento
+        var newAttempt = new attempt
+        {
+            id = NewAttemptId,
+            users_id = userId,
+            trivia_id = triviaId,
+            score = score.ToString(),
+            correct_answercount = correct_answercount,
+            time = time.ToString()
+        };
+
+        // Insertar el nuevo intento en la base de datos
+        var insertResponse = await clientSupabase
+            .From<attempt>()
+            .Insert(new[] { newAttempt });
+
+        if (insertResponse != null && insertResponse.Models.Count > 0)
+        {
+            Debug.Log("Intento guardado exitosamente.");
+        }
+        else
+        {
+            Debug.Log("Error al guardar el intento.");
         }
     }
 }

@@ -15,9 +15,19 @@ public class GameManager : MonoBehaviour
     public bool queryCalled;
 
     private int _points;
+
+    private int user_id;
+
+    private int trivia_id;
+
+    private int time;
+    private int score;
+
     public int _numQuestionAnswered = 0;
     public string _correctAnswer;
     public static GameManager Instance { get; private set; }
+
+
 
     public bool waitingForNext = false;
 
@@ -39,6 +49,7 @@ public class GameManager : MonoBehaviour
         answeredQuestions.Clear();
         queryCalled = false;
         Debug.Log($"answeredQuestions inicial: {answeredQuestions.Count}");
+        Debug.Log($"user_id: {user_id}");
 
     }
 
@@ -97,6 +108,32 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        //user_id = PlayerPrefs.GetInt("UserID", 0);
+        int user_id = SupabaseManager.CurrentUserId;
+        int attempt_id = SupabaseManager.NewAttemptId;
+        trivia_id = PlayerPrefs.GetInt("selected_trivia_id", 0);
+        int correctAnswers = UIManagment.Instance.correct_answercount;
+        int score = ScoreManager.Instance.triviaScore;
+
+
+        Debug.Log($"user_id: {user_id}, trivia_id: {trivia_id}, score: {score}, correct_answercount: {correctAnswers}, time: {time}");
+
+        if (user_id != 0 && trivia_id != 0)
+        {
+            SupabaseManager.Instance.SaveAttempt(attempt_id, user_id, trivia_id, score, correctAnswers, time);
+        }
+        else
+        {
+            if (user_id == 0)
+            {
+                Debug.LogError("user_id no está configurado correctamente.");
+            }
+            if (trivia_id == 0)
+            {
+                Debug.LogError("trivia_id no está configurado correctamente.");
+            }
+        }
+
         SceneManager.LoadScene("GameOver");
     }
 

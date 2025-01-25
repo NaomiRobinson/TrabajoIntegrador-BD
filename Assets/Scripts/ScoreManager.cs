@@ -47,5 +47,7 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"Puntos obtenidos en esta pregunta: {questionPoints}");
         Debug.Log($"Puntaje total acumulado: {triviaScore}");
 
+
     }
+
 }

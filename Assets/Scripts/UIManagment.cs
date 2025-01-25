@@ -27,6 +27,8 @@ public class UIManagment : MonoBehaviour
     private Color _originalButtonColor;
     private bool isLoadingQuestion = false;
 
+    public int correct_answercount { get; private set; }
+
 
     void Awake()
     {
@@ -59,6 +61,8 @@ public class UIManagment : MonoBehaviour
             return; // Salir si GameManager no está listo
         }
 
+        correct_answercount = 0;
+
         _originalButtonColor = _buttons[0].GetComponent<Image>().color;
         GameManager.Instance.answeredQuestions.Clear();
         LoadNextQuestion();
@@ -84,8 +88,8 @@ public class UIManagment : MonoBehaviour
             {
                 timer.PauseTimer();
             }
+            correct_answercount++;
             Invoke("HandleCorrectAnswer", 0.5f);
-            
         }
         else
         {
@@ -209,7 +213,5 @@ public class UIManagment : MonoBehaviour
 
     //    scoreText.text = "Puntaje: " + ScoreManager.Instance.totalScore.ToString();
     //}
-
-    
 
 }
