@@ -60,10 +60,10 @@ public class TriviaSelection : MonoBehaviour
         int selectedIndex = _dropdown.value;
 
         if (selectedIndex < 0 || selectedIndex >= trivias.Count)
-    {
-        Debug.LogError("El índice seleccionado no es válido.");
-        return;
-    }
+        {
+            Debug.LogError("El índice seleccionado no es válido.");
+            return;
+        }
 
         string selectedTrivia = _dropdown.options[selectedIndex].text;
         int triviaId = trivias[selectedIndex].id;
@@ -75,7 +75,7 @@ public class TriviaSelection : MonoBehaviour
         PlayerPrefs.SetString("SelectedTrivia", selectedTrivia);
         PlayerPrefs.SetInt("selected_trivia_id", triviaId);
 
-        SceneManager.LoadScene("Main");
+        SceneManager.LoadScene("LoadingScene");
     }
 
 }

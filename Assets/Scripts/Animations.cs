@@ -11,6 +11,8 @@ public class Animations : MonoBehaviour
     public Animator animator3;
     public Animator animatorImage;
 
+    private bool hasStarted = false;
+
     private void Awake()
     {
         if (animator1 == null || animator2 == null || animator3 == null || animatorImage == null)
@@ -23,6 +25,8 @@ public class Animations : MonoBehaviour
 
     void Start()
     {
+        animatorImage.Play("Idle");
+         hasStarted = true;
     }
 
     // Update is called once per frame
@@ -34,25 +38,27 @@ public class Animations : MonoBehaviour
     public void QuestionHasImage(bool hasImage)
     {
 
-        ResetAllTriggers();
 
-        if (hasImage)
-        {
-            animator1.SetTrigger("MoveButton");
-            animator2.SetTrigger("MoveButton");
-            animator3.SetTrigger("MoveButton");
+        if (!hasStarted) return; // Evita que se ejecute durante la inicialización
 
-            animatorImage.SetTrigger("ShowImage");
-        }
-        else
-        {
-            animator1.SetTrigger("ResetButton");
-            animator2.SetTrigger("ResetButton");
-            animator3.SetTrigger("ResetButton");
+    ResetAllTriggers();
 
-            animatorImage.SetTrigger("HideImage");
+    if (hasImage)
+    {
+        animator1.SetTrigger("MoveButton");
+        animator2.SetTrigger("MoveButton");
+        animator3.SetTrigger("MoveButton");
 
-        }
+        animatorImage.SetTrigger("ShowImage");
+    }
+    else
+    {
+        animator1.SetTrigger("ResetButton");
+        animator2.SetTrigger("ResetButton");
+        animator3.SetTrigger("ResetButton");
+
+        animatorImage.SetTrigger("HideImage");
+    }
 
 
     }
@@ -69,6 +75,9 @@ public class Animations : MonoBehaviour
         animatorImage.ResetTrigger("ShowImage");
         animatorImage.ResetTrigger("HideImage");
     }
+
+
+
 }
 
 

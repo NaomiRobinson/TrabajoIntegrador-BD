@@ -12,13 +12,9 @@ public class UIManagment : MonoBehaviour
     [SerializeField] private Button _nextButton;
     [SerializeField] private Button _backButton;
     [SerializeField] private Timer timer;
-
     [SerializeField] private Image questionImage;
-
     [SerializeField] private DatabaseManager databaseManager;
-
     [SerializeField] private Animations animations;
-
     //[SerializeField] private TextMeshProUGUI scoreText;
 
     public TextMeshProUGUI CategoryText => _categoryText;
@@ -189,21 +185,20 @@ public class UIManagment : MonoBehaviour
 
         bool hasImage = !string.IsNullOrEmpty(assetUrl);
 
+
         if (hasImage)
         {
-
             questionImage.gameObject.SetActive(true);
             if (databaseManager != null)
             {
-                StartCoroutine(databaseManager.LoadImage(assetUrl));
 
+                questionImage.sprite = null;  // Resetea la imagen cargada previamente
+                StartCoroutine(databaseManager.LoadImage(assetUrl)); // Carga la nueva imagen
             }
         }
         else
         {
-            questionImage.gameObject.SetActive(false);
-
-
+            questionImage.gameObject.SetActive(false); // Desactiva la imagen si no hay una
         }
 
         animations.QuestionHasImage(hasImage);
