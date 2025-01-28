@@ -230,4 +230,20 @@ public class SupabaseManager : MonoBehaviour
             Debug.Log("Error al guardar el intento.");
         }
     }
+
+    public async void OrderScore()
+    {
+
+
+        var ranking = await clientSupabase
+        .From<attempt>()
+        .Select("id,score,time,correct_answercount, trivia_id ,trivia(id, category),users_id, users(id,username)")
+        .Order("score", Postgrest.Constants.Ordering.Descending)
+        .Limit(10)
+        .Get();
+
+        
+    }
+
+    
 }

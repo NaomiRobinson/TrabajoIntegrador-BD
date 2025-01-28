@@ -22,5 +22,8 @@ public class attempt : BaseModel
     [Column("users_id")]
     public int users_id { get; set; }
 
+    public trivia trivia { get; set; }
+    
+
 
 }

@@ -13,6 +13,12 @@ public class UIManagment : MonoBehaviour
     [SerializeField] private Button _backButton;
     [SerializeField] private Timer timer;
 
+    [SerializeField] private Image questionImage;
+
+    [SerializeField] private DatabaseManager databaseManager;
+
+    [SerializeField] private Animations animations;
+
     //[SerializeField] private TextMeshProUGUI scoreText;
 
     public TextMeshProUGUI CategoryText => _categoryText;
@@ -28,6 +34,7 @@ public class UIManagment : MonoBehaviour
     private bool isLoadingQuestion = false;
 
     public int correct_answercount { get; private set; }
+
 
 
     void Awake()
@@ -178,6 +185,30 @@ public class UIManagment : MonoBehaviour
         CategoryText.text = PlayerPrefs.GetString("SelectedTrivia");
         QuestionText.text = selectedQuestion.QuestionText;
 
+        string assetUrl = selectedQuestion.asset;
+
+        bool hasImage = !string.IsNullOrEmpty(assetUrl);
+
+        if (hasImage)
+        {
+
+            questionImage.gameObject.SetActive(true);
+            if (databaseManager != null)
+            {
+                StartCoroutine(databaseManager.LoadImage(assetUrl));
+
+            }
+        }
+        else
+        {
+            questionImage.gameObject.SetActive(false);
+
+
+        }
+
+        animations.QuestionHasImage(hasImage);
+
+
         for (int i = 0; i < Buttons.Length; i++)
         {
             if (i < answers.Count)
@@ -188,7 +219,7 @@ public class UIManagment : MonoBehaviour
                     Buttons[i].onClick.RemoveAllListeners();
                     int index = i;
                     Buttons[i].onClick.AddListener(() => OnButtonClick(index));
-                    Buttons[i].gameObject.SetActive(true); // Asegúrate de que el botón esté activo
+                    Buttons[i].gameObject.SetActive(true);
                     Buttons[i].interactable = true;
                 }
                 else
@@ -208,10 +239,9 @@ public class UIManagment : MonoBehaviour
         GameManager.Instance.GameOver();
     }
 
-    // public void UpdateScoreUI()
-    //{
+    public void ShowRanking()
+    {
 
-    //    scoreText.text = "Puntaje: " + ScoreManager.Instance.totalScore.ToString();
-    //}
+    }
 
 }

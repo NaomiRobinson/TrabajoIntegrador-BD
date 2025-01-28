@@ -24,6 +24,12 @@ public class question : BaseModel
     [Column("trivia_id")]
     public int trivia_id { get; set; }
 
+    [Column("asset")]
+    public string asset { get; set; }
+
+
     public trivia trivia { get; set; }
+
+    public users users { get; set; }
 
 }
