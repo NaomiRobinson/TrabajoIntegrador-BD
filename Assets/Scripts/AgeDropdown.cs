@@ -8,13 +8,11 @@ public class AgeDropdown : MonoBehaviour
     [SerializeField] TMP_Dropdown ageDropdown;
     public int minAge = 1;
     public int maxAge = 100;
-
     void Start()
     {
         
         FillAgesDropdown();
     }
-
     void FillAgesDropdown()
     {
         ageDropdown.ClearOptions();

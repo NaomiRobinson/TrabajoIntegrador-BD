@@ -16,14 +16,12 @@ public class attempt : BaseModel
     [Column("correct_answercount")]
     public int correct_answercount { get; set; }
 
-   [Column("trivia_id")]
+    [Column("trivia_id")]
     public int trivia_id { get; set; }
 
     [Column("users_id")]
     public int users_id { get; set; }
 
-    public trivia trivia { get; set; }
-    
-
+    public users user { get; set; }
 
 }

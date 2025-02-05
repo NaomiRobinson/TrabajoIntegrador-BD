@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class SupabaseManager : MonoBehaviour
 
@@ -28,6 +29,8 @@ public class SupabaseManager : MonoBehaviour
 
     string supabaseUrl = "https://dxnralwsjyajjuvtklyh.supabase.co";
     string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4bnJhbHdzanlhamp1dnRrbHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTEyMjEsImV4cCI6MjA0ODIyNzIyMX0.ycX6tcetKLqeTYggvN4VDE6WGo2tZDSQ_1xoD12lTwA";
+
+    public List<attempt> ranking = new List<attempt>();
 
     Supabase.Client clientSupabase;
 
@@ -89,7 +92,7 @@ public class SupabaseManager : MonoBehaviour
             //PlayerPrefs.SetInt("user_id", existingUser.Models[0].id);
             //PlayerPrefs.Save();
 
-            SceneManager.LoadScene("TriviaSelectScene");
+            SceneManager.LoadScene("MainMenu");
         }
         else
         {
@@ -231,19 +234,36 @@ public class SupabaseManager : MonoBehaviour
         }
     }
 
-    public async void OrderScore()
+    public async Task OrderScore()
     {
-
-
         var ranking = await clientSupabase
         .From<attempt>()
-        .Select("id,score,time,correct_answercount, trivia_id ,trivia(id, category),users_id, users(id,username)")
+        .Select("id,score,time,correct_answercount,trivia_id,users_id")
         .Order("score", Postgrest.Constants.Ordering.Descending)
         .Limit(10)
         .Get();
 
-        
+        foreach (var attempt in ranking.Models)
+        {
+            var user = await clientSupabase
+                .From<users>()
+                .Select("*")
+                .Where(u => u.id == attempt.users_id)
+                .Get();
+
+
+            attempt.user = user.Models[0];
+        }
+        if (ranking.Models != null)
+        {
+            this.ranking = ranking.Models;
+        }
     }
 
-    
+    public Supabase.Client GetClientSupabase()
+    {
+        return clientSupabase;
+    }
+
+
 }

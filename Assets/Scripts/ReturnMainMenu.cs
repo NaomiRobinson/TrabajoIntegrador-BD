@@ -7,6 +7,6 @@ public class ReturnMainMenu : MonoBehaviour
     {
         Debug.Log("Volviendo al menú principal");
         Destroy(GameManager.Instance);
-        SceneManager.LoadScene("TriviaSelectScene");
+        SceneManager.LoadScene("MainMenu");
     }
 }

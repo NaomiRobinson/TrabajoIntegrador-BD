@@ -26,9 +26,6 @@ public class GameManager : MonoBehaviour
     public int _numQuestionAnswered = 0;
     public string _correctAnswer;
     public static GameManager Instance { get; private set; }
-
-
-
     public bool waitingForNext = false;
 
     void Awake()
@@ -52,7 +49,6 @@ public class GameManager : MonoBehaviour
         Debug.Log($"user_id: {user_id}");
 
     }
-
     public void CategoryAndQuestionQuery()
     {
         if (responseList.Count == answeredQuestions.Count)
@@ -61,7 +57,6 @@ public class GameManager : MonoBehaviour
             GameOver();
             return;
         }
-
         int randomQuestionIndex;
         do
         {
@@ -93,19 +88,15 @@ public class GameManager : MonoBehaviour
         {
             timer.ResetTimer();
         }
-
     }
-
     public string GetCorrectAnswer()
     {
         return _correctAnswer;
     }
-
     public bool HasMoreQuestions()
     {
         return answeredQuestions.Count < responseList.Count;
     }
-
     public void GameOver()
     {
         //user_id = PlayerPrefs.GetInt("UserID", 0);
@@ -114,7 +105,6 @@ public class GameManager : MonoBehaviour
         trivia_id = PlayerPrefs.GetInt("selected_trivia_id", 0);
         int correctAnswers = UIManagment.Instance.correct_answercount;
         int score = ScoreManager.Instance.triviaScore;
-
 
         Debug.Log($"user_id: {user_id}, trivia_id: {trivia_id}, score: {score}, correct_answercount: {correctAnswers}, time: {time}");
 
@@ -143,8 +133,6 @@ public class GameManager : MonoBehaviour
 
         GameOver();
     }
-
-
 
 }
 

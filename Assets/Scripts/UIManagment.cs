@@ -192,7 +192,7 @@ public class UIManagment : MonoBehaviour
             if (databaseManager != null)
             {
 
-                questionImage.sprite = null;  // Resetea la imagen cargada previamente
+                questionImage.sprite = null;  
                 StartCoroutine(databaseManager.LoadImage(assetUrl)); // Carga la nueva imagen
             }
         }
