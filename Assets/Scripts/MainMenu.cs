@@ -3,15 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class MainMenu : MonoBehaviour
 {
+
+    public static int CurrentUserId { get; private set; }
     [SerializeField] private Button _playbutton;
     [SerializeField] private Button _exitbutton;
-
     [SerializeField] private Button _rankingbutton;
+    [SerializeField] TextMeshProUGUI _userText;
+
+
     void Start()
     {
+        if (_userText != null)
+        {
+            _userText.text = $"¡Hola {SupabaseManager.CurrentUserName}!";
+        }
+
+
         if (_playbutton != null)
         {
             _playbutton.onClick.AddListener(NextScene);

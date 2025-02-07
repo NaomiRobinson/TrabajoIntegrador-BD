@@ -983,6 +983,7 @@ MonoBehaviour:
   _playbutton: {fileID: 562249548}
   _exitbutton: {fileID: 2005374680}
   _rankingbutton: {fileID: 986808407}
+  _userText: {fileID: 825336019}
 --- !u!4 &1543847163
 Transform:
   m_ObjectHideFlags: 0

@@ -1114,7 +1114,7 @@ MonoBehaviour:
   - {fileID: 1948195676}
   - {fileID: 665890164}
   _nextButton: {fileID: 651198761}
-  _backButton: {fileID: 665890164}
+  _backButton: {fileID: 0}
   timer: {fileID: 1619166948}
   questionImage: {fileID: 1837343501}
   databaseManager: {fileID: 1810078027}

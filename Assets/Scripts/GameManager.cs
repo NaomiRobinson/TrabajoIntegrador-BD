@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
     private int time;
     private int score;
 
+    private Timer timer;
+
     public int _numQuestionAnswered = 0;
     public string _correctAnswer;
     public static GameManager Instance { get; private set; }
@@ -106,6 +108,13 @@ public class GameManager : MonoBehaviour
         int correctAnswers = UIManagment.Instance.correct_answercount;
         int score = ScoreManager.Instance.triviaScore;
 
+        if (Timer.Instance != null)
+        {
+            time = (int)Timer.Instance.GetGameTime();
+        }
+
+        Debug.Log($"Tiempo al final: {time} segundos");
+
         Debug.Log($"user_id: {user_id}, trivia_id: {trivia_id}, score: {score}, correct_answercount: {correctAnswers}, time: {time}");
 
         if (user_id != 0 && trivia_id != 0)
@@ -135,4 +144,3 @@ public class GameManager : MonoBehaviour
     }
 
 }
-

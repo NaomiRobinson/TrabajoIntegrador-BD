@@ -8,6 +8,8 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 public class SupabaseManager : MonoBehaviour
 
@@ -23,6 +25,7 @@ public class SupabaseManager : MonoBehaviour
     [SerializeField] GameObject signUpPopUp;
 
     public static SupabaseManager Instance { get; private set; }
+    public static string CurrentUserName { get; private set; }
 
     public static int CurrentUserId { get; private set; }
     public static int NewAttemptId { get; private set; }
@@ -31,6 +34,8 @@ public class SupabaseManager : MonoBehaviour
     string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4bnJhbHdzanlhamp1dnRrbHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTEyMjEsImV4cCI6MjA0ODIyNzIyMX0.ycX6tcetKLqeTYggvN4VDE6WGo2tZDSQ_1xoD12lTwA";
 
     public List<attempt> ranking = new List<attempt>();
+    public List<users> users = new List<users>();
+    public List<trivia> trivias = new List<trivia>();
 
     Supabase.Client clientSupabase;
 
@@ -50,8 +55,46 @@ public class SupabaseManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         clientSupabase = new Supabase.Client(supabaseUrl, supabaseKey);
 
+
     }
 
+    void Start()
+    {
+
+        InitializeData();
+    }
+
+    public Supabase.Client GetClientSupabase()
+    {
+        return clientSupabase;
+    }
+
+    async void InitializeData()
+    {
+        await LoadUsers();
+        await LoadRanking();
+        await LoadTrivias();
+    }
+
+    async Task LoadUsers()
+    {
+        var response = await clientSupabase.From<users>().Select("*").Get();
+        if (response?.Models != null) users = response.Models;
+    }
+
+    async Task LoadRanking()
+    {
+        var response = await clientSupabase.From<attempt>().Select("*").Get();
+        if (response?.Models != null) ranking = response.Models;
+    }
+
+    async Task LoadTrivias()
+    {
+        var response = await clientSupabase.From<trivia>().Select("*").Get();
+        if (response?.Models != null) trivias = response.Models;
+    }
+
+    //Inicio de sesion 
     public async void UserLogin()
     {
         var test_response = await clientSupabase
@@ -88,9 +131,8 @@ public class SupabaseManager : MonoBehaviour
             _stateText.color = Color.green;
 
             CurrentUserId = existingUser.Models[0].id;
+            CurrentUserName = existingUser.Models[0].username;
 
-            //PlayerPrefs.SetInt("user_id", existingUser.Models[0].id);
-            //PlayerPrefs.Save();
 
             SceneManager.LoadScene("MainMenu");
         }
@@ -101,6 +143,8 @@ public class SupabaseManager : MonoBehaviour
             _stateText.color = Color.red;
         }
     }
+
+    //Creacion de cuenta nueva
 
     public void ShowsignUpPopUp()
     {
@@ -118,7 +162,6 @@ public class SupabaseManager : MonoBehaviour
 
     }
 
-
     public async void InsertNewUser()
     {
 
@@ -132,7 +175,6 @@ public class SupabaseManager : MonoBehaviour
             _stateText.color = Color.red;
             return;
         }
-
 
         var existingUser = await clientSupabase
         .From<users>()
@@ -150,19 +192,16 @@ public class SupabaseManager : MonoBehaviour
         var ultimoId = await clientSupabase
          .From<users>()
          .Select("id")
-         .Order(users => users.id, Postgrest.Constants.Ordering.Descending)
+         .Order("id", Postgrest.Constants.Ordering.Descending)
          .Get();
 
         int nuevoId = 1;
-
-
 
         if (ultimoId.Models.Count > 0 && ultimoId.Models[0] != null)
         {
             nuevoId = ultimoId.Models[0].id + 1;
         }
 
-        // Crear el nuevo usuario con el nuevo id
         var nuevoUsuario = new users
         {
             id = nuevoId,
@@ -171,12 +210,10 @@ public class SupabaseManager : MonoBehaviour
             password = _signUpUserPassInput.text,
         };
 
-        // Insertar el nuevo usuario
         var resultado = await clientSupabase
             .From<users>()
             .Insert(new[] { nuevoUsuario });
 
-        // Verificar el estado de la inserción
         if (resultado != null && resultado.Models.Count > 0)
         {
             _stateText.text = "Usuario Correctamente Ingresado";
@@ -184,31 +221,29 @@ public class SupabaseManager : MonoBehaviour
         }
     }
 
+    //Guardado del intento y organizacion del ranking
+
     public async void SaveAttempt(int id, int userId, int triviaId, int score, int correct_answercount, float time)
     {
+        int totalTime = Mathf.RoundToInt(Timer.Instance.GetGameTime());
         Debug.Log($"Intentando guardar intento: userId={userId}, triviaId={triviaId}, score={score}, correct_answercount={correct_answercount}, time={time}");
-
         if (userId == 0 || triviaId == 0)
         {
             Debug.LogError("User ID o Trivia ID no disponibles.");
             return;
         }
-
         var lastAttemptId = await clientSupabase
         .From<attempt>()
         .Select("id")
         .Order(attempt => attempt.id, Postgrest.Constants.Ordering.Descending)
         .Get();
-
         int NewAttemptId = 1;
-
 
         if (lastAttemptId.Models.Count > 0 && lastAttemptId.Models[0] != null)
         {
             NewAttemptId = lastAttemptId.Models[0].id + 1;
         }
 
-        // Crear un nuevo intento
         var newAttempt = new attempt
         {
             id = NewAttemptId,
@@ -216,54 +251,40 @@ public class SupabaseManager : MonoBehaviour
             trivia_id = triviaId,
             score = score.ToString(),
             correct_answercount = correct_answercount,
-            time = time.ToString()
+            time = totalTime.ToString(),
         };
 
-        // Insertar el nuevo intento en la base de datos
         var insertResponse = await clientSupabase
             .From<attempt>()
             .Insert(new[] { newAttempt });
 
-        if (insertResponse != null && insertResponse.Models.Count > 0)
+        if (insertResponse.ResponseMessage.IsSuccessStatusCode)
         {
             Debug.Log("Intento guardado exitosamente.");
         }
         else
         {
-            Debug.Log("Error al guardar el intento.");
+            Debug.Log("Error al guardar el intento." + insertResponse.ResponseMessage);
         }
     }
 
-    public async Task OrderScore()
+    public async Task<List<attempt>> OrderScore(int? triviaId = null)
     {
-        var ranking = await clientSupabase
-        .From<attempt>()
-        .Select("id,score,time,correct_answercount,trivia_id,users_id")
-        .Order("score", Postgrest.Constants.Ordering.Descending)
-        .Limit(10)
-        .Get();
+        await LoadRanking();
 
-        foreach (var attempt in ranking.Models)
+        var sortedList = ranking.OrderByDescending(x => int.Parse(x.score)).ToList();
+
+        if (triviaId.HasValue)
         {
-            var user = await clientSupabase
-                .From<users>()
-                .Select("*")
-                .Where(u => u.id == attempt.users_id)
-                .Get();
-
-
-            attempt.user = user.Models[0];
+            sortedList = sortedList.Where(x => x.trivia_id == triviaId.Value).ToList();
         }
-        if (ranking.Models != null)
-        {
-            this.ranking = ranking.Models;
-        }
+        Debug.Log($"Intentos filtrados por triviaId={triviaId}: {sortedList.Count}");
+        return sortedList.Take(10).ToList();
     }
-
-    public Supabase.Client GetClientSupabase()
+    public int GetTriviaIdFromCategory(string category)
     {
-        return clientSupabase;
+        var trivia = trivias.FirstOrDefault(t => t.category == category);
+        return trivia != null ? trivia.id : -1;
     }
-
 
 }

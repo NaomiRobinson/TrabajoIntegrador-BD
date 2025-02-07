@@ -25,11 +25,18 @@ public class Animations : MonoBehaviour
 
     void Start()
     {
-        animatorImage.Play("Idle");
-         hasStarted = true;
+        if (animatorImage.HasState(0, Animator.StringToHash("Idle")))
+        {
+            animatorImage.Play("Idle");
+        }
+        else
+        {
+            Debug.LogError("El estado 'Idle' no existe en el AnimatorController.");
+        }
+        hasStarted = true;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
 
@@ -41,24 +48,24 @@ public class Animations : MonoBehaviour
 
         if (!hasStarted) return; // Evita que se ejecute durante la inicialización
 
-    ResetAllTriggers();
+        ResetAllTriggers();
 
-    if (hasImage)
-    {
-        animator1.SetTrigger("MoveButton");
-        animator2.SetTrigger("MoveButton");
-        animator3.SetTrigger("MoveButton");
+        if (hasImage)
+        {
+            animator1.SetTrigger("MoveButton");
+            animator2.SetTrigger("MoveButton");
+            animator3.SetTrigger("MoveButton");
 
-        animatorImage.SetTrigger("ShowImage");
-    }
-    else
-    {
-        animator1.SetTrigger("ResetButton");
-        animator2.SetTrigger("ResetButton");
-        animator3.SetTrigger("ResetButton");
+            animatorImage.SetTrigger("ShowImage");
+        }
+        else
+        {
+            animator1.SetTrigger("ResetButton");
+            animator2.SetTrigger("ResetButton");
+            animator3.SetTrigger("ResetButton");
 
-        animatorImage.SetTrigger("HideImage");
-    }
+            animatorImage.SetTrigger("HideImage");
+        }
 
 
     }

@@ -70,12 +70,25 @@ public class TriviaSelection : MonoBehaviour
 
         Debug.Log($"Trivia seleccionada: {selectedTrivia}, ID: {triviaId}");
 
+        PlayerPrefs.SetInt("SelectedIndex", selectedIndex + 1); // Guarda el índice de la trivia
+        PlayerPrefs.SetString("SelectedTrivia", trivias[selectedIndex].category); // Guarda el nombre de la categoría
+        PlayerPrefs.SetInt("selected_trivia_id", triviaId); // Guarda el ID de la trivia seleccionada
 
-        PlayerPrefs.SetInt("SelectedIndex", selectedIndex + 1);
-        PlayerPrefs.SetString("SelectedTrivia", selectedTrivia);
-        PlayerPrefs.SetInt("selected_trivia_id", triviaId);
 
-        SceneManager.LoadScene("LoadingScene");
+        // Reiniciar datos del juego
+        GameManager.Instance.responseList = new List<question>();
+        if (UIManagment.Instance != null)
+        {
+            UIManagment.Instance.SetCorrectAnswerCount(0);// Inicializa correct_answercount en UIManagment
+        }
+        else
+        {
+            Debug.LogWarning("UIManagment no está inicializado aún.");
+        }
+        GameManager.Instance._numQuestionAnswered = 0;
+        GameManager.Instance.answeredQuestions.Clear();
+
+        SceneManager.LoadScene("Main");
     }
 
 }

@@ -15,3 +15,5 @@ public class trivia : BaseModel
     public List<question> questions { get; set; }
 }
 
+
+

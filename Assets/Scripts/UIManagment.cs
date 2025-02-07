@@ -58,12 +58,13 @@ public class UIManagment : MonoBehaviour
 
     private void Start()
     {
+
         if (GameManager.Instance == null)
         {
             Debug.LogError("GameManager no está inicializado.");
             return; // Salir si GameManager no está listo
         }
-
+        Timer.Instance.StartGameTimer();
         correct_answercount = 0;
 
         _originalButtonColor = _buttons[0].GetComponent<Image>().color;
@@ -103,13 +104,14 @@ public class UIManagment : MonoBehaviour
     }
     private void HandleCorrectAnswer()
     {
-        RestoreButtonColor();
+        // No restaurar el color aún
         GameManager.Instance._answers.Clear();
-        ShowNextButton(true);
+        ShowNextButton(true); // Mostrar el botón de "Siguiente"
     }
 
     private void HandleIncorrectAnswer()
     {
+        // No restaurar el color aún
         RestoreButtonColor();
         CallGameOver();
     }
@@ -117,18 +119,28 @@ public class UIManagment : MonoBehaviour
 
     private void ChangeButtonColor(int buttonIndex, Color color)
     {
+        // Cambia el color directamente a cada botón
         Image buttonImage = _buttons[buttonIndex].GetComponent<Image>();
-        buttonImage.color = color;
+        if (buttonImage != null)
+        {
+            buttonImage.color = color; // Asigna el color deseado
+        }
     }
 
     private void RestoreButtonColor()
     {
+        Color defaultColor = new Color(1f, 1f, 1f, 1f); // Blanco con opacidad total
+
         foreach (Button button in _buttons)
         {
             Image buttonImage = button.GetComponent<Image>();
-            buttonImage.color = _originalButtonColor;
+            if (buttonImage != null)
+            {
+                buttonImage.color = defaultColor; // Establece el color restaurado
+            }
         }
     }
+
 
     public void ShowNextButton(bool show)
     {
@@ -144,6 +156,7 @@ public class UIManagment : MonoBehaviour
         {
             Debug.Log("Loading next question...");
             GameManager.Instance.CategoryAndQuestionQuery();
+            RestoreButtonColor();
             ShowNextButton(false);
 
             if (timer != null)
@@ -192,8 +205,8 @@ public class UIManagment : MonoBehaviour
             if (databaseManager != null)
             {
 
-                questionImage.sprite = null;  
-                StartCoroutine(databaseManager.LoadImage(assetUrl)); // Carga la nueva imagen
+                questionImage.sprite = null;
+               StartCoroutine(databaseManager.LoadImage(assetUrl, null));
             }
         }
         else
@@ -231,12 +244,13 @@ public class UIManagment : MonoBehaviour
 
     private void CallGameOver()
     {
+        Timer.Instance.StopGameTimer();
         GameManager.Instance.GameOver();
     }
 
-    public void ShowRanking()
+    public void SetCorrectAnswerCount(int value)
     {
-
+        correct_answercount = value;
     }
 
 }

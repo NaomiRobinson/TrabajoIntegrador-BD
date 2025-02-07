@@ -13,6 +13,21 @@ public class Timer : MonoBehaviour
     private float currentTime;
     private bool countingDown = false;
 
+    public float gameTime = 0f;
+    private bool isTiming = false;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Start()
     {
         currentTime = maxTime;
@@ -21,6 +36,11 @@ public class Timer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isTiming)
+        {
+            gameTime += Time.deltaTime;
+        }
+
         if (countingDown)
         {
             currentTime -= Time.deltaTime;
@@ -32,6 +52,28 @@ public class Timer : MonoBehaviour
                 TimerEnded();
             }
         }
+    }
+
+    public void StartGameTimer()
+    {
+        isTiming = true;
+        Debug.Log("arranco el tiempo");
+    }
+
+    public void StopGameTimer()
+    {
+        isTiming = false;
+        Debug.Log("finalizo el tiempo");
+    }
+
+    public void ResetGamerTimer()
+    {
+        gameTime = 0f;
+    }
+
+    public float GetGameTime()
+    {
+        return gameTime;
     }
 
 
