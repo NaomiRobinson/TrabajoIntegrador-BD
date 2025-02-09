@@ -283,8 +283,16 @@ public class SupabaseManager : MonoBehaviour
     }
     public int GetTriviaIdFromCategory(string category)
     {
+        
+        if (trivias == null || trivias.Count == 0)
+        {
+            Debug.LogError("Error: No hay trivias cargadas.");
+            return -1;
+        }
+
         var trivia = trivias.FirstOrDefault(t => t.category == category);
         return trivia != null ? trivia.id : -1;
+
     }
 
 }

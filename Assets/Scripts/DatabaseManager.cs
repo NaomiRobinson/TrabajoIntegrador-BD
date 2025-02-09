@@ -27,89 +27,90 @@ public class DatabaseManager : MonoBehaviour
         await LoadTriviaData(index);
     }
 
-   async Task LoadTriviaData(int index)
-{
-    if (clientSupabase == null)
+    async Task LoadTriviaData(int index)
     {
-        Debug.LogError("Supabase client is not initialized.");
-        return;
-    }
-
-    Debug.Log($"Loading trivia data for index: {index}");
-
-    var response = await clientSupabase
-        .From<question>()
-        .Where(question => question.trivia_id == index)
-        .Select("id, question, answer1, answer2, answer3, correct_answer, trivia_id, trivia(id, category),asset")
-        .Get();
-
-    if (response == null || response.Models.Count == 0)
-    {
-        Debug.LogError("No trivia data found for the given index.");
-        return;
-    }
-    else
-    {
-        Debug.Log($"Found {response.Models.Count} trivia items.");
-    }
-
-    GameManager.Instance.currentTriviaIndex = index;
-    GameManager.Instance.responseList = response.Models;
-
-    Debug.Log("Response from query: " + response.Models.Count);
-    Debug.Log("ResponseList from GM: " + GameManager.Instance.responseList.Count);
-
-    // Solo cargar la imagen de la primera pregunta
-    if (response.Models.Count > 0)
-    {
-        StartCoroutine(LoadImage(response.Models[0].asset, () =>
+        if (clientSupabase == null)
         {
-            UIManagment.Instance.LoadNextQuestion();
-        }));
+            Debug.LogError("Supabase client is not initialized.");
+            return;
+        }
+
+        Debug.Log($"Loading trivia data for index: {index}");
+
+        var response = await clientSupabase
+            .From<question>()
+            .Where(question => question.trivia_id == index)
+            .Select("id, question, answer1, answer2, answer3, correct_answer, trivia_id, trivia(id, category),asset")
+            .Get();
+
+        if (response == null || response.Models.Count == 0)
+        {
+            Debug.LogError("No trivia data found for the given index.");
+            return;
+        }
+        else
+        {
+            Debug.Log($"Found {response.Models.Count} trivia items.");
+        }
+
+        GameManager.Instance.currentTriviaIndex = index;
+        GameManager.Instance.responseList = response.Models;
+
+        Debug.Log("Response from query: " + response.Models.Count);
+        Debug.Log("ResponseList from GM: " + GameManager.Instance.responseList.Count);
+
+        // Solo cargar la imagen de la primera pregunta
+        if (response.Models.Count > 0)
+        {
+            StartCoroutine(LoadImage(response.Models[0].asset, () =>
+            {
+                UIManagment.Instance.LoadNextQuestion();
+            }));
+        }
+        else
+        {
+            Debug.LogError("No questions available to load.");
+        }
     }
-    else
-    {
-        Debug.LogError("No questions available to load.");
-    }
-}
 
     public IEnumerator LoadImage(string url, System.Action onImageLoaded)
-{
-    if (string.IsNullOrEmpty(url))
     {
+        if (string.IsNullOrEmpty(url))
+        {
+            if (questionImage != null)
+            {
+                questionImage.gameObject.SetActive(false);
+            }
+            Debug.LogWarning("No image URL provided.");
+            onImageLoaded?.Invoke(); // Asegurar que el callback se llama incluso si no hay imagen
+            yield break;
+        }
+
         if (questionImage != null)
         {
-            questionImage.gameObject.SetActive(false);
+            questionImage.gameObject.SetActive(true);
         }
-        Debug.LogWarning("No image URL provided.");
-        onImageLoaded?.Invoke(); // Asegurar que el callback se llama incluso si no hay imagen
-        yield break;
-    }
+        Debug.Log("Encoded URL: " + url);
 
-    if (questionImage != null)
-    {
-        questionImage.gameObject.SetActive(true);
-    }
-    Debug.Log("Encoded URL: " + url);
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        yield return www.SendWebRequest();
 
-    UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
-    yield return www.SendWebRequest();
-
-    if (www.result == UnityWebRequest.Result.Success)
-    {
-        Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-        if (questionImage != null)
+        if (www.result == UnityWebRequest.Result.Success)
         {
-            questionImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            Debug.Log("Image loaded successfully.");
+            Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            if (questionImage != null)
+            {
+                questionImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                Debug.Log("Image loaded successfully.");
+            }
         }
-    }
-    else
-    {
-        Debug.LogError("Error loading image: " + www.error);
-    }
+        else
+        {
+            Debug.LogError("Error loading image: " + www.error);
+        }
 
-    // Llamar al callback para asegurar que el flujo continúe
-    onImageLoaded?.Invoke();
-}
+
+        onImageLoaded?.Invoke();
+
+    }
 }

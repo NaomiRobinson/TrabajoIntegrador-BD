@@ -6,20 +6,20 @@ using UnityEngine.SceneManagement;
 
 public class UIManagment : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _categoryText;
-    [SerializeField] private TextMeshProUGUI _questionText;
-    [SerializeField] public Button[] _buttons;
-    [SerializeField] private Button _nextButton;
-    [SerializeField] private Button _backButton;
-    [SerializeField] private Timer timer;
-    [SerializeField] private Image questionImage;
-    [SerializeField] private DatabaseManager databaseManager;
-    [SerializeField] private Animations animations;
-    //[SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] TextMeshProUGUI _categoryText;
+    [SerializeField] TextMeshProUGUI _questionText;
+
+    [SerializeField] Button _nextButton;
+    [SerializeField] Button _backButton;
+    [SerializeField] Timer timer;
+    [SerializeField] Image questionImage;
+    [SerializeField] DatabaseManager databaseManager;
+    [SerializeField] Animations animations;
+
 
     public TextMeshProUGUI CategoryText => _categoryText;
     public TextMeshProUGUI QuestionText => _questionText;
-    public Button[] Buttons => _buttons;
+    public Button[] _buttons = new Button[3];
 
     public static UIManagment Instance { get; private set; }
 
@@ -31,19 +31,24 @@ public class UIManagment : MonoBehaviour
 
     public int correct_answercount { get; private set; }
 
-
+    private static UIManagment instance;
 
     void Awake()
     {
-        // Configura la instancia
         if (Instance == null)
+    {
+        Instance = this;
+       
+    }
+    else
+    {
+        Destroy(gameObject);
+    }
+
+        if (_buttons == null || _buttons.Length == 0)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // Para mantener el objeto entre escenas
-        }
-        else
-        {
-            Destroy(gameObject);
+            Debug.LogError("Los botones no están asignados correctamente en el inspector.");
+            return;
         }
         if (_nextButton != null)
         {
@@ -51,38 +56,44 @@ public class UIManagment : MonoBehaviour
         }
         if (_backButton != null)
         {
-            _backButton.gameObject.SetActive(true);
+            _backButton.gameObject.SetActive(false);
         }
         _backButton.onClick.AddListener(PreviousScene);
     }
 
     private void Start()
     {
-
         if (GameManager.Instance == null)
         {
             Debug.LogError("GameManager no está inicializado.");
             return; // Salir si GameManager no está listo
         }
+        string selectedTrivia = PlayerPrefs.GetString("SelectedTrivia", "Valor por defecto");  // Obtén el valor de PlayerPrefs
+        Debug.Log($"SelectedTrivia: {selectedTrivia}");
+
+        CategoryText.text = selectedTrivia;
         Timer.Instance.StartGameTimer();
         correct_answercount = 0;
 
         _originalButtonColor = _buttons[0].GetComponent<Image>().color;
         GameManager.Instance.answeredQuestions.Clear();
         LoadNextQuestion();
+        Debug.Log($"UIManagment Instance: {Instance}");
+
     }
     public void OnButtonClick(int buttonIndex)
     {
         if (isLoadingQuestion) return; // Evita procesar clics mientras se carga una nueva pregunta
 
-        string selectedAnswer = Buttons[buttonIndex].GetComponentInChildren<TextMeshProUGUI>().text;
+        string selectedAnswer = _buttons[buttonIndex].GetComponentInChildren<TextMeshProUGUI>().text;
         bool isCorrect = selectedAnswer == GameManager.Instance.GetCorrectAnswer();
 
         // Desactiva los botones para evitar más clics
-        foreach (Button button in Buttons)
+        foreach (Button button in _buttons)
         {
             button.interactable = false;
         }
+
 
         if (isCorrect)
         {
@@ -104,15 +115,15 @@ public class UIManagment : MonoBehaviour
     }
     private void HandleCorrectAnswer()
     {
-        // No restaurar el color aún
+
         GameManager.Instance._answers.Clear();
         ShowNextButton(true); // Mostrar el botón de "Siguiente"
     }
 
     private void HandleIncorrectAnswer()
     {
-        // No restaurar el color aún
         RestoreButtonColor();
+
         CallGameOver();
     }
 
@@ -131,16 +142,26 @@ public class UIManagment : MonoBehaviour
     {
         Color defaultColor = new Color(1f, 1f, 1f, 1f); // Blanco con opacidad total
 
+        if (_buttons == null || _buttons.Length == 0)
+        {
+            Debug.LogError("Los botones no están asignados correctamente.");
+            return;
+        } // Evita errores si el array de botones es nulo o vacío
+
         foreach (Button button in _buttons)
         {
-            Image buttonImage = button.GetComponent<Image>();
-            if (buttonImage != null)
+            if (button != null) // Asegurar que el botón sigue existiendo
             {
-                buttonImage.color = defaultColor; // Establece el color restaurado
+                Image buttonImage = button.GetComponent<Image>();
+                if (buttonImage != null)
+                {
+                    buttonImage.color = defaultColor; // Restablecer color
+                    button.interactable = true; // Asegurarse de que los botones sean interactivos
+                    button.gameObject.SetActive(true); // Asegurarse de que los botones estén visibles
+                }
             }
         }
     }
-
 
     public void ShowNextButton(bool show)
     {
@@ -152,9 +173,11 @@ public class UIManagment : MonoBehaviour
 
     public void LoadNextQuestion()
     {
+
+
         if (GameManager.Instance.HasMoreQuestions())
         {
-            Debug.Log("Loading next question...");
+            Debug.Log("Cargando la siguiente pregunta...");
             GameManager.Instance.CategoryAndQuestionQuery();
             RestoreButtonColor();
             ShowNextButton(false);
@@ -163,12 +186,10 @@ public class UIManagment : MonoBehaviour
             {
                 timer.ResetTimer();
             }
-
         }
         else
         {
             Debug.Log("No hay más preguntas disponibles.");
-
             CallGameOver();
         }
     }
@@ -185,9 +206,20 @@ public class UIManagment : MonoBehaviour
 
     public void UpdateUI(question selectedQuestion, List<string> answers)
     {
-        if (Buttons == null || Buttons.Length == 0)
+
+        if (selectedQuestion == null)
         {
-            Debug.LogError("Buttons array is null or empty.");
+            Debug.LogError("La pregunta seleccionada es nula.");
+            return;
+        }
+        if (answers == null || answers.Count == 0)
+        {
+            Debug.LogError("La lista de respuestas está vacía o es nula.");
+            return;
+        }
+        if (_buttons == null || _buttons.Length == 0)
+        {
+            Debug.LogError("El array de _buttons es null o vacío.");
             return;
         }
 
@@ -195,18 +227,16 @@ public class UIManagment : MonoBehaviour
         QuestionText.text = selectedQuestion.QuestionText;
 
         string assetUrl = selectedQuestion.asset;
-
         bool hasImage = !string.IsNullOrEmpty(assetUrl);
 
-
+        // Manejo de la imagen
         if (hasImage)
         {
             questionImage.gameObject.SetActive(true);
             if (databaseManager != null)
             {
-
                 questionImage.sprite = null;
-               StartCoroutine(databaseManager.LoadImage(assetUrl, null));
+                StartCoroutine(databaseManager.LoadImage(assetUrl, null));
             }
         }
         else
@@ -216,28 +246,31 @@ public class UIManagment : MonoBehaviour
 
         animations.QuestionHasImage(hasImage);
 
-
-        for (int i = 0; i < Buttons.Length; i++)
+        // Actualiza los botones con las respuestas
+        for (int i = 0; i < _buttons.Length; i++)
         {
+            if (_buttons[i] == null)
+            {
+                Debug.LogError($"Button at index {i} is null.");
+                continue; // Si un botón es null, se salta ese índice
+            }
+
             if (i < answers.Count)
             {
-                if (Buttons[i] != null)
+                var buttonText = _buttons[i].GetComponentInChildren<TextMeshProUGUI>();
+                if (buttonText != null)
                 {
-                    Buttons[i].GetComponentInChildren<TextMeshProUGUI>().text = answers[i];
-                    Buttons[i].onClick.RemoveAllListeners();
+                    buttonText.text = answers[i];
+                    _buttons[i].onClick.RemoveAllListeners(); // Limpiar los listeners previos
                     int index = i;
-                    Buttons[i].onClick.AddListener(() => OnButtonClick(index));
-                    Buttons[i].gameObject.SetActive(true);
-                    Buttons[i].interactable = true;
-                }
-                else
-                {
-                    Debug.LogWarning($"Button at index {i} is null.");
+                    _buttons[i].onClick.AddListener(() => OnButtonClick(index)); // Asigna el nuevo listener
+                    _buttons[i].gameObject.SetActive(true); // Asegura que el botón esté activo
+                    _buttons[i].interactable = true; // Asegura que el botón sea interactivo
                 }
             }
             else
             {
-                Buttons[i].gameObject.SetActive(false);
+                _buttons[i].gameObject.SetActive(false); // Desactiva el botón si no hay respuesta
             }
         }
     }
@@ -252,5 +285,6 @@ public class UIManagment : MonoBehaviour
     {
         correct_answercount = value;
     }
+
 
 }

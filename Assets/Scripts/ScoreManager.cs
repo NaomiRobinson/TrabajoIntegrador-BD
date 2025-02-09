@@ -10,10 +10,7 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
-    public int points = 10;
-    public int questionPoints;
-    public int triviaScore;
-    private int timeUsed;
+
     [SerializeField] GameObject rankingItemPrefab;
     [SerializeField] Transform contentTransform;
     [SerializeField] TMP_Dropdown rankingDropdown;
@@ -33,7 +30,7 @@ public class ScoreManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject);
 
         }
         else
@@ -44,6 +41,7 @@ public class ScoreManager : MonoBehaviour
 
     async void Start()
     {
+        
         await LoadTrivias();
         PopulateRankingDropdown();
         rankingDropdown.onValueChanged.AddListener(OnRankingDropdownValueChanged);
@@ -58,19 +56,14 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
-    }
-
-    public void CalculateScore(int timeLeft, int maxTime)
+        if (loadingSpinner != null && loadingSpinner.activeInHierarchy)
     {
-        Debug.Log("Calculando puntaje...");
-        timeUsed = maxTime - timeLeft;
-        questionPoints = Mathf.Max(0, points - timeUsed);
-        triviaScore += questionPoints;
-        Debug.Log($"Puntos obtenidos en esta pregunta: {questionPoints}");
-        Debug.Log($"Puntaje total acumulado: {triviaScore}");
-
-
+        loadingSpinner.transform.Rotate(0f, 0f, 100f * Time.deltaTime); 
     }
+    }
+
+
+
 
 
     public void PopulateRankingDropdown()
@@ -103,17 +96,6 @@ public class ScoreManager : MonoBehaviour
 
     }
 
-    public int GetTriviaIdFromCategory(string category)
-    {
-        if (trivias == null || trivias.Count == 0)
-        {
-            Debug.LogError("Error: No hay trivias cargadas.");
-            return -1;
-        }
-
-        var trivia = trivias.FirstOrDefault(t => t.category == category);
-        return trivia != null ? trivia.id : -1;
-    }
 
 
     public void CreateRanking(List<attempt> attempts)
@@ -189,6 +171,8 @@ public class ScoreManager : MonoBehaviour
         Destroy(gameObject);
         SceneManager.LoadScene("MainMenu");
     }
+
+
 
 
 

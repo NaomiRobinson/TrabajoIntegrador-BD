@@ -96,13 +96,13 @@ public class Timer : MonoBehaviour
     {
         countingDown = false;
         int timeLeft = Mathf.Max(0, Mathf.CeilToInt(currentTime));
-        if (ScoreManager.Instance != null)
+        if (GameManager.Instance != null)
         {
-            ScoreManager.Instance.CalculateScore(timeLeft, (int)maxTime);
+            GameManager.Instance.CalculateScore(timeLeft, (int)maxTime);
         }
         else
         {
-            Debug.LogError("ScoreManager.Instance es null. Asegúrate de que ScoreManager esté correctamente inicializado.");
+            Debug.LogError("GameeManager.Instance es null. ");
         }
     }
 

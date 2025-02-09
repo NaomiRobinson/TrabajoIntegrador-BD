@@ -37,6 +37,9 @@ public class MainMenu : MonoBehaviour
         {
             _rankingbutton.onClick.AddListener(GoToRanking);
         }
+
+
+
     }
     void Update()
     { }
@@ -54,4 +57,6 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene("RankingScene");
     }
+
+
 }

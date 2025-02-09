@@ -18,9 +18,13 @@ public class ReturnMainMenu : MonoBehaviour
 
     }
     public void LoadMainMenu()
+    { if (_menuButton != null)
     {
+        _menuButton.onClick.RemoveListener(LoadMainMenu);
+    }
 
-        SceneManager.LoadScene("MainMenu");
+    GameManager.Instance.ResetGame();
+    SceneManager.LoadScene("MainMenu");
     }
 
 }
