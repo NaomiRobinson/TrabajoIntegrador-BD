@@ -8,6 +8,9 @@ public class ReturnMainMenu : MonoBehaviour
 {
 
     [SerializeField] private Button _menuButton;
+    [SerializeField] private TMP_Text finalScoreText;
+
+     [SerializeField] private TMP_Text gameOverMessageText;
 
     void Start()
     {
@@ -15,6 +18,18 @@ public class ReturnMainMenu : MonoBehaviour
         {
             _menuButton.onClick.AddListener(LoadMainMenu);
         }
+
+        if (finalScoreText != null)
+        {
+            int finalScore = PlayerPrefs.GetInt("FinalScore", 0); // Obtener el puntaje guardado
+            finalScoreText.text = $"Puntaje Final: {finalScore}"; // Mostrar puntaje en el TextMeshProUGUI
+        }
+
+         if (gameOverMessageText != null)
+        {
+            gameOverMessageText.text = PlayerPrefs.GetString("GameOverMessage", "¡Juego terminado!");
+        }
+
 
     }
     public void LoadMainMenu()

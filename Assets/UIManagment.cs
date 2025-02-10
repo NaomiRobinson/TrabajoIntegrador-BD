@@ -12,6 +12,7 @@ public class UIManagment : MonoBehaviour
     [SerializeField] Button _nextButton;
     [SerializeField] Button _backButton;
     [SerializeField] Timer timer;
+    [SerializeField] TextMeshProUGUI scoreText;
     [SerializeField] Image questionImage;
     [SerializeField] DatabaseManager databaseManager;
     [SerializeField] Animations animations;
@@ -36,14 +37,14 @@ public class UIManagment : MonoBehaviour
     void Awake()
     {
         if (Instance == null)
-    {
-        Instance = this;
-       
-    }
-    else
-    {
-        Destroy(gameObject);
-    }
+        {
+            Instance = this;
+
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
 
         if (_buttons == null || _buttons.Length == 0)
         {
@@ -79,6 +80,8 @@ public class UIManagment : MonoBehaviour
         GameManager.Instance.answeredQuestions.Clear();
         LoadNextQuestion();
         Debug.Log($"UIManagment Instance: {Instance}");
+
+        UpdateScoreUI(GameManager.Instance.triviaScore);
 
     }
     public void OnButtonClick(int buttonIndex)
@@ -117,14 +120,15 @@ public class UIManagment : MonoBehaviour
     {
 
         GameManager.Instance._answers.Clear();
+        UpdateScoreUI(GameManager.Instance.triviaScore);
         ShowNextButton(true); // Mostrar el botón de "Siguiente"
     }
 
     private void HandleIncorrectAnswer()
     {
         RestoreButtonColor();
-
         CallGameOver();
+        PlayerPrefs.SetString("GameOverMessage", "Respuesta incorrecta. Intentalo de nuevo");
     }
 
 
@@ -190,6 +194,7 @@ public class UIManagment : MonoBehaviour
         else
         {
             Debug.Log("No hay más preguntas disponibles.");
+            PlayerPrefs.SetString("GameOverMessage", "¡Felicidades! Respondiste todas las preguntas.");
             CallGameOver();
         }
     }
@@ -272,6 +277,14 @@ public class UIManagment : MonoBehaviour
             {
                 _buttons[i].gameObject.SetActive(false); // Desactiva el botón si no hay respuesta
             }
+        }
+    }
+
+    public void UpdateScoreUI(int score)
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = $"{score}";
         }
     }
 

@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/LoadingScene.unity
-    guid: 923438817afb85d478e2806ad94d54c9
+    path: Assets/Scenes/LoginScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 51a3a508af87c4242b57f4ee0a38bff8
@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/RankingScene.unity
     guid: aede95f285550b14791929cf2c150b3b
+  - enabled: 0
+    path: Assets/Scenes/LoadingScene.unity
+    guid: 923438817afb85d478e2806ad94d54c9
   m_configObjects: {}

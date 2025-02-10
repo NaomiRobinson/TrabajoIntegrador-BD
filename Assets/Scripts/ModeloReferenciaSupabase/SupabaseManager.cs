@@ -20,7 +20,9 @@ public class SupabaseManager : MonoBehaviour
     [SerializeField] TMP_InputField _loginUserPassInput;
     [SerializeField] TMP_InputField _signUpUserIDInput;
     [SerializeField] TMP_InputField _signUpUserPassInput;
-    [SerializeField] TextMeshProUGUI _stateText;
+    [SerializeField] TextMeshProUGUI _signUpstateText;
+
+    [SerializeField] TextMeshProUGUI _loginstateText;
     [SerializeField] TMP_Dropdown _ageDropdown;
     [SerializeField] GameObject signUpPopUp;
 
@@ -112,8 +114,8 @@ public class SupabaseManager : MonoBehaviour
         if (existingUser.Models.Count == 0)
         {
             print("Nombre incorrecto");
-            _stateText.text = "Nombre incorrecto";
-            _stateText.color = Color.red;
+            _loginstateText.text = "Nombre incorrecto o inxesitente";
+            _loginstateText.color = Color.red;
             return;
         }
 
@@ -127,8 +129,8 @@ public class SupabaseManager : MonoBehaviour
         if (string.Equals(login_password.Model.password, _loginUserPassInput.text))
         {
             print("LOGIN SUCCESSFUL");
-            _stateText.text = "LOGIN SUCCESSFUL";
-            _stateText.color = Color.green;
+            _loginstateText.text = "LOGIN SUCCESSFUL";
+            _loginstateText.color = Color.green;
 
             CurrentUserId = existingUser.Models[0].id;
             CurrentUserName = existingUser.Models[0].username;
@@ -139,8 +141,8 @@ public class SupabaseManager : MonoBehaviour
         else
         {
             print("contraseña incorrecta");
-            _stateText.text = "contraseña incorrecta";
-            _stateText.color = Color.red;
+            _loginstateText.text = "contraseña incorrecta";
+            _loginstateText.color = Color.red;
         }
     }
 
@@ -148,7 +150,7 @@ public class SupabaseManager : MonoBehaviour
 
     public void ShowsignUpPopUp()
     {
-        _stateText.text = "";
+        _signUpstateText.text = "";
         signUpPopUp.SetActive(true);
     }
 
@@ -156,7 +158,7 @@ public class SupabaseManager : MonoBehaviour
     {
         _signUpUserIDInput.text = "";
         _signUpUserPassInput.text = "";
-        _stateText.text = "";
+        _signUpstateText.text = "";
         _ageDropdown.value = 0;
         signUpPopUp.SetActive(false);
 
@@ -171,8 +173,8 @@ public class SupabaseManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(_signUpUserIDInput.text) || string.IsNullOrEmpty(_signUpUserPassInput.text))
         {
-            _stateText.text = "Por favor, complete todos los campos";
-            _stateText.color = Color.red;
+            _signUpstateText.text = "Por favor, complete todos los campos";
+            _signUpstateText.color = Color.red;
             return;
         }
 
@@ -184,8 +186,8 @@ public class SupabaseManager : MonoBehaviour
 
         if (existingUser.Models.Count > 0)
         {
-            _stateText.text = "El nombre de usuario ya está en uso";
-            _stateText.color = Color.red;
+            _signUpstateText.text = "El nombre de usuario ya está en uso";
+            _signUpstateText.color = Color.red;
             return;
         }
 
@@ -216,8 +218,8 @@ public class SupabaseManager : MonoBehaviour
 
         if (resultado != null && resultado.Models.Count > 0)
         {
-            _stateText.text = "Usuario Correctamente Ingresado";
-            _stateText.color = Color.green;
+            _signUpstateText.text = "Usuario Correctamente Ingresado. Cierre la ventana e inicie sesion";
+            _signUpstateText.color = Color.green;
         }
     }
 
@@ -283,7 +285,7 @@ public class SupabaseManager : MonoBehaviour
     }
     public int GetTriviaIdFromCategory(string category)
     {
-        
+
         if (trivias == null || trivias.Count == 0)
         {
             Debug.LogError("Error: No hay trivias cargadas.");

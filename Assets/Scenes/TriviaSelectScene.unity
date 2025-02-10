@@ -195,8 +195,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 360.8805, y: -203.79834}
-  m_SizeDelta: {x: 21.5544, y: 10.3078}
+  m_AnchoredPosition: {x: 324.44086, y: -197.7413}
+  m_SizeDelta: {x: 30.1214, y: 11.8564}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &199656048
 MonoBehaviour:
@@ -570,7 +570,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.0000076293945, y: -6.9834986}
-  m_SizeDelta: {x: 85.229, y: 13.967}
+  m_SizeDelta: {x: 91.2257, y: 13.967}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &415376612
 MonoBehaviour:
@@ -707,6 +707,9 @@ MonoBehaviour:
   _numQuestionAnswered: 0
   _correctAnswer: 
   waitingForNext: 0
+  points: 10
+  questionPoints: 0
+  triviaScore: 0
 --- !u!4 &440389291
 Transform:
   m_ObjectHideFlags: 0
@@ -993,7 +996,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5566038, g: 0.29142934, b: 0.5566038, a: 1}
+  m_Color: {r: 0.28235295, g: 0.15294118, b: 0.3764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1769,7 +1772,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 23.7429, y: 145}
+  m_AnchoredPosition: {x: -0.99329, y: 107}
   m_SizeDelta: {x: 502.1837, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1272754847
@@ -1855,7 +1858,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -276.20197, y: -44.679688, z: -219.33685, w: -28.432617}
+  m_margin: {x: -136.15594, y: -44.679688, z: -134.26227, w: -28.432617}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1980,8 +1983,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.935421, y: 0.057290077}
-  m_SizeDelta: {x: -29.87085, y: -11.88542}
+  m_AnchoredPosition: {x: -8.600002, y: 0.0000009536743}
+  m_SizeDelta: {x: -29.87085, y: -7.7263}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1432981960
 MonoBehaviour:
@@ -2220,7 +2223,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: START
+  m_text: Comenzar
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2253,7 +2256,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535

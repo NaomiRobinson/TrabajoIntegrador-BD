@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
     public int triviaScore;
     private int timeUsed;
 
+
+
     void Awake()
     {
         if (Instance == null)
@@ -49,7 +51,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-       
+
         answeredQuestions.Clear();
         queryCalled = false;
         Debug.Log($"answeredQuestions inicial: {answeredQuestions.Count}");
@@ -107,8 +109,8 @@ public class GameManager : MonoBehaviour
 
         if (UIManagment.Instance != null)
         {
-            UIManagment.Instance.UpdateUI(selectedQuestion, _answers);  // Cambio: Ahora actualizamos la UI desde GameManager
-            UIManagment.Instance.ShowNextButton(false); 
+            UIManagment.Instance.UpdateUI(selectedQuestion, _answers);  
+            UIManagment.Instance.ShowNextButton(false);
         }
         else
         {
@@ -123,7 +125,7 @@ public class GameManager : MonoBehaviour
             timer.ResetTimer();
         }
     }
-    
+
     public string GetCorrectAnswer()
     {
         return _correctAnswer;
@@ -133,39 +135,43 @@ public class GameManager : MonoBehaviour
         return answeredQuestions.Count < responseList.Count;
     }
     public void GameOver()
-{
-    int user_id = SupabaseManager.CurrentUserId;
-    int attempt_id = SupabaseManager.NewAttemptId;
-    trivia_id = PlayerPrefs.GetInt("selected_trivia_id", 0);
-    int correctAnswers = UIManagment.Instance.correct_answercount;
-    
-    int score = triviaScore;
-      PlayerPrefs.SetInt("FinalScore", score); 
-
-    if (Timer.Instance != null)
     {
-        time = (int)Timer.Instance.GetGameTime();
-    }
+        int user_id = SupabaseManager.CurrentUserId;
+        int attempt_id = SupabaseManager.NewAttemptId;
+        trivia_id = PlayerPrefs.GetInt("selected_trivia_id", 0);
+        int correctAnswers = UIManagment.Instance.correct_answercount;
 
-    Debug.Log($"Tiempo al final: {time} segundos");
-    Debug.Log($"user_id: {user_id}, trivia_id: {trivia_id}, score: {score}, correct_answercount: {correctAnswers}, time: {time}");
+        int score = triviaScore;
+        PlayerPrefs.SetInt("FinalScore", score);
 
-    if (user_id != 0 && trivia_id != 0)
-    {
-        SupabaseManager.Instance.SaveAttempt(attempt_id, user_id, trivia_id, score, correctAnswers, time);
-    }
-    else
-    {
-        if (user_id == 0) { Debug.LogError("user_id no está configurado correctamente."); }
-        if (trivia_id == 0) { Debug.LogError("trivia_id no está configurado correctamente."); }
-    }
+        if (Timer.Instance != null)
+        {
+            time = (int)Timer.Instance.GetGameTime();
+        }
 
-    SceneManager.LoadScene("GameOver");
-}
+        Debug.Log($"Tiempo al final: {time} segundos");
+        Debug.Log($"user_id: {user_id}, trivia_id: {trivia_id}, score: {score}, correct_answercount: {correctAnswers}, time: {time}");
+
+        if (user_id != 0 && trivia_id != 0)
+        {
+            SupabaseManager.Instance.SaveAttempt(attempt_id, user_id, trivia_id, score, correctAnswers, time);
+        }
+        else
+        {
+            if (user_id == 0) { Debug.LogError("user_id no está configurado correctamente."); }
+            if (trivia_id == 0) { Debug.LogError("trivia_id no está configurado correctamente."); }
+        }
+        
+
+        SceneManager.LoadScene("GameOver");
+    }
 
     public void TimeUp()
     {
         Debug.Log("El tiempo se ha agotado.");
+
+        PlayerPrefs.SetString("GameOverMessage", "¡Que lastima! Se acabó el tiempo");
+
 
         GameOver();
     }
@@ -186,27 +192,27 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.DeleteKey("selected_trivia_id");
 
         Timer.Instance?.ResetGamerTimer();
-       ResetScore();
+        ResetScore();
 
         Debug.Log("El juego ha sido reiniciado.");
     }
 
-      public void CalculateScore(int timeLeft, int maxTime)
-{
-    Debug.Log("Calculando puntaje...");
-    timeUsed = maxTime - timeLeft;
-    questionPoints = Mathf.Max(0, points - timeUsed);
-    triviaScore += questionPoints;
-    Debug.Log($"Puntos obtenidos en esta pregunta: {questionPoints}");
-    Debug.Log($"Puntaje total acumulado: {triviaScore}");
-}
+    public void CalculateScore(int timeLeft, int maxTime)
+    {
+        Debug.Log("Calculando puntaje...");
+        timeUsed = maxTime - timeLeft;
+        questionPoints = Mathf.Max(0, points - timeUsed);
+        triviaScore += questionPoints;
+        Debug.Log($"Puntos obtenidos en esta pregunta: {questionPoints}");
+        Debug.Log($"Puntaje total acumulado: {triviaScore}");
+    }
 
 
- public void ResetScore()
-{
-    triviaScore = 0;
-    questionPoints = 0;
-    Debug.Log("Puntaje reiniciado.");
-}
+    public void ResetScore()
+    {
+        triviaScore = 0;
+        questionPoints = 0;
+        Debug.Log("Puntaje reiniciado.");
+    }
 
 }

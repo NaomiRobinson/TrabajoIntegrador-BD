@@ -58,7 +58,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (loadingSpinner != null && loadingSpinner.activeInHierarchy)
     {
-        loadingSpinner.transform.Rotate(0f, 0f, 100f * Time.deltaTime); 
+        loadingSpinner.transform.Rotate(0f, 0f, -100f * Time.deltaTime); 
     }
     }
 
