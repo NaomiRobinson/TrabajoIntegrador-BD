@@ -52,11 +52,11 @@ public class UIManagment : MonoBehaviour
         {
             _nextButton.onClick.AddListener(LoadNextQuestion);
         }
-        if (_backButton != null)
-        {
-            _backButton.gameObject.SetActive(false);
-        }
-        _backButton.onClick.AddListener(PreviousScene);
+        // if (_backButton != null)
+        // {
+        //     _backButton.gameObject.SetActive(false);
+        // }
+        // _backButton.onClick.AddListener(PreviousScene);
     }
 
     private void Start()
@@ -66,15 +66,16 @@ public class UIManagment : MonoBehaviour
             Debug.LogError("GameManager no está inicializado.");
             return;
         }
+
         string selectedTrivia = PlayerPrefs.GetString("SelectedTrivia", "Valor por defecto");
         Debug.Log($"SelectedTrivia: {selectedTrivia}");
 
         CategoryText.text = selectedTrivia;
-        correct_answercount = 0;
+        //correct_answercount = 0;
 
         _originalButtonColor = _buttons[0].GetComponent<Image>().color;
         GameManager.Instance.answeredQuestions.Clear();
-        LoadNextQuestion();
+        // LoadNextQuestion();
         Debug.Log($"UIManagment Instance: {Instance}");
 
         UpdateScoreUI(GameManager.Instance.triviaScore, GameManager.Instance.questionPoints);
@@ -92,7 +93,6 @@ public class UIManagment : MonoBehaviour
         {
             button.interactable = false;
         }
-
 
         if (isCorrect)
         {
@@ -114,10 +114,9 @@ public class UIManagment : MonoBehaviour
     }
     private void HandleCorrectAnswer()
     {
-
         GameManager.Instance._answers.Clear();
         UpdateScoreUI(GameManager.Instance.triviaScore, GameManager.Instance.questionPoints);
-        ShowNextButton(true); // Mostrar el botón de "Siguiente"
+        ShowNextButton(true);
     }
 
     private void HandleIncorrectAnswer()
@@ -130,11 +129,10 @@ public class UIManagment : MonoBehaviour
 
     private void ChangeButtonColor(int buttonIndex, Color color)
     {
-        // Cambia el color directamente a cada botón
         Image buttonImage = _buttons[buttonIndex].GetComponent<Image>();
         if (buttonImage != null)
         {
-            buttonImage.color = color; // Asigna el color deseado
+            buttonImage.color = color;
         }
     }
 
@@ -146,7 +144,7 @@ public class UIManagment : MonoBehaviour
         {
             Debug.LogError("Los botones no están asignados correctamente.");
             return;
-        } // Evita errores si el array de botones es nulo o vacío
+        }
 
         foreach (Button button in _buttons)
         {
@@ -173,7 +171,6 @@ public class UIManagment : MonoBehaviour
 
     public void LoadNextQuestion()
     {
-
         if (GameManager.Instance.HasMoreQuestions())
         {
             Debug.Log("Cargando la siguiente pregunta...");
@@ -194,29 +191,16 @@ public class UIManagment : MonoBehaviour
         }
     }
 
+    // public void PreviousScene()
+    // {
 
-
-    public void PreviousScene()
-    {
-
-        Destroy(GameManager.Instance);
-        Destroy(UIManagment.Instance);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
-    }
+    //     Destroy(GameManager.Instance);
+    //     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+    // }
 
     public void UpdateUI(question selectedQuestion, List<string> answers)
     {
 
-        if (selectedQuestion == null)
-        {
-            Debug.LogError("La pregunta seleccionada es nula.");
-            return;
-        }
-        if (answers == null || answers.Count == 0)
-        {
-            Debug.LogError("La lista de respuestas está vacía o es nula.");
-            return;
-        }
         if (_buttons == null || _buttons.Length == 0)
         {
             Debug.LogError("El array de _buttons es null o vacío.");
@@ -226,22 +210,25 @@ public class UIManagment : MonoBehaviour
         CategoryText.text = PlayerPrefs.GetString("SelectedTrivia");
         QuestionText.text = selectedQuestion.QuestionText;
 
-        string assetUrl = selectedQuestion.asset;
-        bool hasImage = !string.IsNullOrEmpty(assetUrl);
 
         // Manejo de la imagen
+
+        string assetUrl = selectedQuestion.asset;
+
+        bool hasImage = !string.IsNullOrEmpty(assetUrl);
+
         if (hasImage)
         {
-            questionImage.gameObject.SetActive(true);
             if (databaseManager != null)
             {
-                questionImage.sprite = null;
+                questionImage.sprite = null; //limpiar imagen previa
                 StartCoroutine(databaseManager.LoadImage(assetUrl, null));
             }
+
         }
         else
         {
-            questionImage.gameObject.SetActive(false); // Desactiva la imagen si no hay una
+            questionImage.gameObject.SetActive(false);
         }
 
         animations.QuestionHasImage(hasImage);
@@ -252,7 +239,7 @@ public class UIManagment : MonoBehaviour
             if (_buttons[i] == null)
             {
                 Debug.LogError($"Button at index {i} is null.");
-                continue; // Si un botón es null, se salta ese índice
+                continue;
             }
 
             if (i < answers.Count)
@@ -300,11 +287,5 @@ public class UIManagment : MonoBehaviour
     {
         GameManager.Instance.GameOver();
     }
-
-    public void SetCorrectAnswerCount(int value)
-    {
-        correct_answercount = value;
-    }
-
 
 }

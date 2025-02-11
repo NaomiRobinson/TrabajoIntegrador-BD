@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
     private int user_id;
     private int trivia_id;
     private int time;
-   
     public int points = 10;
     public int questionPoints;
     public int triviaScore;
@@ -40,13 +39,13 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-
         // answeredQuestions.Clear();
 
         string selectedTrivia = PlayerPrefs.GetString("SelectedTrivia", "Valor por defecto");
         Debug.Log($"Trivia seleccionada: {selectedTrivia}");
-
     }
+
+    //inicializacion de la pregunta 
 
     public void CategoryAndQuestionQuery()
     {
