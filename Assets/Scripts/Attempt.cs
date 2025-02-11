@@ -9,10 +9,6 @@ public class attempt : BaseModel
     [Column("score")]
     public string score { get; set; }
 
-     [Column("time")]
-    public string time { get; set; }
-
-
     [Column("correct_answercount")]
     public int correct_answercount { get; set; }
 

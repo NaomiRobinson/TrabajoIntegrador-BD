@@ -19,7 +19,6 @@ public class ScoreManager : MonoBehaviour
 
     private List<trivia> trivias;
 
-    private const int GeneralCategoryIndex = 0;
 
     public static ScoreManager Instance { get; private set; }
 
@@ -30,7 +29,6 @@ public class ScoreManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            // DontDestroyOnLoad(gameObject);
 
         }
         else
@@ -41,10 +39,8 @@ public class ScoreManager : MonoBehaviour
 
     async void Start()
     {
-        
-        await LoadTrivias();
-        PopulateRankingDropdown();
-        rankingDropdown.onValueChanged.AddListener(OnRankingDropdownValueChanged);
+        FillRankingDropdown();
+        rankingDropdown.onValueChanged.AddListener(DropdownCategoryChanged);
 
         if (backButton != null)
         {
@@ -57,16 +53,12 @@ public class ScoreManager : MonoBehaviour
     void Update()
     {
         if (loadingSpinner != null && loadingSpinner.activeInHierarchy)
-    {
-        loadingSpinner.transform.Rotate(0f, 0f, -100f * Time.deltaTime); 
+        {
+            loadingSpinner.transform.Rotate(0f, 0f, -100f * Time.deltaTime);
+        }
     }
-    }
 
-
-
-
-
-    public void PopulateRankingDropdown()
+    public void FillRankingDropdown()
     {
         rankingDropdown.ClearOptions();
 
@@ -84,23 +76,43 @@ public class ScoreManager : MonoBehaviour
         rankingDropdown.AddOptions(options);
     }
 
-    public async void OnRankingDropdownValueChanged(int index)
+    public async void DropdownCategoryChanged(int index)
     {
         string selectedCategory = rankingDropdown.options[index].text;
-        Debug.Log("Categoría seleccionada: " + selectedCategory);  // Verifica qué categoría se seleccionó
+        Debug.Log("Categoría seleccionada: " + selectedCategory); 
 
-        int? triviaId = selectedCategory == "General" ? (int?)null : SupabaseManager.Instance.GetTriviaIdFromCategory(selectedCategory);
+        int? triviaId = selectedCategory == "General" ? null : SupabaseManager.Instance.GetTriviaIdFromCategory(selectedCategory);
         await ShowRanking(triviaId);
 
-        // Aquí debes filtrar e actualizar la lista con los puntajes filtrados
-
     }
+    
+ public async Task ShowRanking(int? triviaId = null)
+    {
+        Debug.Log("ShowRanking ha sido llamada.");
+        if (loadingSpinner != null)
+        {
+            loadingSpinner.SetActive(true);
+        }
 
+        List<attempt> filteredAttempts = await SupabaseManager.Instance.OrderScore(triviaId);
+        
 
+        foreach (var attempt in filteredAttempts)
+        {
+            Debug.Log($"Intento - Usuario: {attempt.users_id}, Puntuación: {attempt.score}, Trivia ID: {attempt.trivia_id}");
+        }
+
+        await ReloadUsers();
+        CreateRanking(filteredAttempts);
+
+        if (loadingSpinner != null)
+        {
+            loadingSpinner.SetActive(false);
+        }
+    }
 
     public void CreateRanking(List<attempt> attempts)
     {
-
         foreach (Transform child in contentTransform)
         {
             Destroy(child.gameObject);
@@ -108,6 +120,7 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"Mostrando {attempts.Count} intentos en el ranking.");
 
         int position = 1;
+
         foreach (var attempt in attempts)
         {
             GameObject rankingItem = Instantiate(rankingItemPrefab, contentTransform);
@@ -118,62 +131,37 @@ public class ScoreManager : MonoBehaviour
             string username = user != null ? user.username : "Desconocido";
 
             texts[0].text = position.ToString();
-            texts[1].text = username; // Mostrar el nombre de usuario
-            texts[2].text = attempt.score.ToString(); // Asegúrate de convertir el score a string si es necesario
+            texts[1].text = username; 
+            texts[2].text = attempt.score.ToString(); 
 
             position++;
-        }
-    }
-
-    public async Task LoadTrivias()
-    {
-        var triviaData = await SupabaseManager.Instance.GetClientSupabase()
-            .From<trivia>()
-            .Select("*")
-            .Get();
-
-        trivias = triviaData.Models;
-
-        Debug.Log("Trivias cargadas:");
-        foreach (var t in trivias)
-        {
-            Debug.Log($"ID: {t.id}, Categoría: {t.category}");
-        }
-        PopulateRankingDropdown();
-    }
-    public async Task ShowRanking(int? triviaId = null)
-    {
-        Debug.Log("ShowRanking ha sido llamada.");
-        if (loadingSpinner != null)
-        {
-            loadingSpinner.SetActive(true);
-        }
-
-        List<attempt> filteredAttempts = await SupabaseManager.Instance.OrderScore(triviaId);
-        Debug.Log($"Número de intentos filtrados para trivia {triviaId}: {filteredAttempts.Count}");
-        foreach (var attempt in filteredAttempts)
-        {
-            Debug.Log($"Intento - Usuario: {attempt.users_id}, Puntuación: {attempt.score}, Trivia ID: {attempt.trivia_id}");
-        }
-
-        CreateRanking(filteredAttempts);
-
-        if (loadingSpinner != null)
-        {
-            loadingSpinner.SetActive(false);
         }
     }
 
 
     public void BackMenu()
     {
-        rankingDropdown.onValueChanged.RemoveListener(OnRankingDropdownValueChanged);
+        rankingDropdown.onValueChanged.RemoveListener(DropdownCategoryChanged);
         Destroy(gameObject);
         SceneManager.LoadScene("MainMenu");
     }
 
 
+    public async Task ReloadUsers()
+    {
+        var userData = await SupabaseManager.Instance.GetClientSupabase()
+            .From<users>()
+            .Select("*")
+            .Get();
 
+        SupabaseManager.Instance.users = userData.Models;
+
+        Debug.Log("Usuarios recargados:");
+        foreach (var u in SupabaseManager.Instance.users)
+        {
+            Debug.Log($"ID: {u.id}, Nombre: {u.username}");
+        }
+    }
 
 
 }

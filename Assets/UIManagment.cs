@@ -13,6 +13,7 @@ public class UIManagment : MonoBehaviour
     [SerializeField] Button _backButton;
     [SerializeField] Timer timer;
     [SerializeField] TextMeshProUGUI scoreText;
+    [SerializeField] TextMeshProUGUI pointsText;
     [SerializeField] Image questionImage;
     [SerializeField] DatabaseManager databaseManager;
     [SerializeField] Animations animations;
@@ -24,15 +25,11 @@ public class UIManagment : MonoBehaviour
 
     public static UIManagment Instance { get; private set; }
 
-    public bool queryCalled;
 
-    private string _correctAnswer;
     private Color _originalButtonColor;
     private bool isLoadingQuestion = false;
 
     public int correct_answercount { get; private set; }
-
-    private static UIManagment instance;
 
     void Awake()
     {
@@ -67,13 +64,12 @@ public class UIManagment : MonoBehaviour
         if (GameManager.Instance == null)
         {
             Debug.LogError("GameManager no está inicializado.");
-            return; // Salir si GameManager no está listo
+            return;
         }
-        string selectedTrivia = PlayerPrefs.GetString("SelectedTrivia", "Valor por defecto");  // Obtén el valor de PlayerPrefs
+        string selectedTrivia = PlayerPrefs.GetString("SelectedTrivia", "Valor por defecto");
         Debug.Log($"SelectedTrivia: {selectedTrivia}");
 
         CategoryText.text = selectedTrivia;
-        Timer.Instance.StartGameTimer();
         correct_answercount = 0;
 
         _originalButtonColor = _buttons[0].GetComponent<Image>().color;
@@ -81,7 +77,7 @@ public class UIManagment : MonoBehaviour
         LoadNextQuestion();
         Debug.Log($"UIManagment Instance: {Instance}");
 
-        UpdateScoreUI(GameManager.Instance.triviaScore);
+        UpdateScoreUI(GameManager.Instance.triviaScore, GameManager.Instance.questionPoints);
 
     }
     public void OnButtonClick(int buttonIndex)
@@ -120,7 +116,7 @@ public class UIManagment : MonoBehaviour
     {
 
         GameManager.Instance._answers.Clear();
-        UpdateScoreUI(GameManager.Instance.triviaScore);
+        UpdateScoreUI(GameManager.Instance.triviaScore, GameManager.Instance.questionPoints);
         ShowNextButton(true); // Mostrar el botón de "Siguiente"
     }
 
@@ -128,7 +124,7 @@ public class UIManagment : MonoBehaviour
     {
         RestoreButtonColor();
         CallGameOver();
-        PlayerPrefs.SetString("GameOverMessage", "Respuesta incorrecta. Intentalo de nuevo");
+        PlayerPrefs.SetString("GameOverMessage", "Respuesta incorrecta\nIntentalo de nuevo");
     }
 
 
@@ -144,7 +140,7 @@ public class UIManagment : MonoBehaviour
 
     private void RestoreButtonColor()
     {
-        Color defaultColor = new Color(1f, 1f, 1f, 1f); // Blanco con opacidad total
+        Color defaultColor = new Color(0.992f, 1f, 0.863f, 1f);
 
         if (_buttons == null || _buttons.Length == 0)
         {
@@ -178,7 +174,6 @@ public class UIManagment : MonoBehaviour
     public void LoadNextQuestion()
     {
 
-
         if (GameManager.Instance.HasMoreQuestions())
         {
             Debug.Log("Cargando la siguiente pregunta...");
@@ -194,7 +189,7 @@ public class UIManagment : MonoBehaviour
         else
         {
             Debug.Log("No hay más preguntas disponibles.");
-            PlayerPrefs.SetString("GameOverMessage", "¡Felicidades! Respondiste todas las preguntas.");
+            PlayerPrefs.SetString("GameOverMessage", "¡Felicidades!\nRespondiste todas las preguntas.");
             CallGameOver();
         }
     }
@@ -280,17 +275,29 @@ public class UIManagment : MonoBehaviour
         }
     }
 
-    public void UpdateScoreUI(int score)
+    public void UpdateScoreUI(int score, int questionPoints)
     {
         if (scoreText != null)
         {
             scoreText.text = $"{score}";
         }
+
+        if (pointsText != null)
+        {
+            pointsText.gameObject.SetActive(true);
+            pointsText.text = $"+{questionPoints}";
+            Invoke("EffectPointsText", 1f);
+        }
+
+    }
+
+    private void EffectPointsText()
+    {
+        pointsText.gameObject.SetActive(false);
     }
 
     private void CallGameOver()
     {
-        Timer.Instance.StopGameTimer();
         GameManager.Instance.GameOver();
     }
 

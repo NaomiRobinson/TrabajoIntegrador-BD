@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Animations : MonoBehaviour
 {
-
-
     public Animator animator1;
     public Animator animator2;
     public Animator animator3;
@@ -21,8 +19,6 @@ public class Animations : MonoBehaviour
         }
     }
 
-
-
     void Start()
     {
         if (animatorImage.HasState(0, Animator.StringToHash("Idle")))
@@ -36,54 +32,44 @@ public class Animations : MonoBehaviour
         hasStarted = true;
     }
 
-
-    void Update()
-    {
-
-    }
-
     public void QuestionHasImage(bool hasImage)
     {
 
-
-        if (!hasStarted) return; // Evita que se ejecute durante la inicialización
-
+    if (!hasStarted) return; 
+    
+       if (hasImage)
+    {
         ResetAllTriggers();
-
-        if (hasImage)
-        {
-            animator1.SetTrigger("MoveButton");
-            animator2.SetTrigger("MoveButton");
-            animator3.SetTrigger("MoveButton");
-
-            animatorImage.SetTrigger("ShowImage");
-        }
-        else
-        {
-            animator1.SetTrigger("ResetButton");
-            animator2.SetTrigger("ResetButton");
-            animator3.SetTrigger("ResetButton");
-
-            animatorImage.SetTrigger("HideImage");
-        }
-
+        animator1.SetTrigger("MoveButton");
+        animator2.SetTrigger("MoveButton");
+        animator3.SetTrigger("MoveButton");
+        animatorImage.SetTrigger("ShowImage");
+    }
+    else
+    {
+        ResetAllTriggers();
+        animator1.SetTrigger("ResetButton");
+        animator2.SetTrigger("ResetButton");
+        animator3.SetTrigger("ResetButton");
+        animatorImage.SetTrigger("HideImage");
+    }
 
     }
 
     private void ResetAllTriggers()
     {
+        string[] triggers = { "MoveButton", "ResetButton"};
 
-        animator1.ResetTrigger("MoveButton");
-        animator2.ResetTrigger("MoveButton");
-        animator3.ResetTrigger("MoveButton");
-        animator1.ResetTrigger("ResetButton");
-        animator2.ResetTrigger("ResetButton");
-        animator3.ResetTrigger("ResetButton");
+        foreach (var trigger in triggers)
+    {
+        animator1.ResetTrigger(trigger);
+        animator2.ResetTrigger(trigger);
+        animator3.ResetTrigger(trigger);
+
         animatorImage.ResetTrigger("ShowImage");
         animatorImage.ResetTrigger("HideImage");
     }
-
-
+    }
 
 }
 

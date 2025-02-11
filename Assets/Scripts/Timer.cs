@@ -13,9 +13,6 @@ public class Timer : MonoBehaviour
     private float currentTime;
     private bool countingDown = false;
 
-    public float gameTime = 0f;
-    private bool isTiming = false;
-
     void Awake()
     {
         if (Instance == null)
@@ -33,18 +30,13 @@ public class Timer : MonoBehaviour
         currentTime = maxTime;
         countingDown = true;
     }
-    // Update is called once per frame
+   
     void Update()
     {
-        if (isTiming)
-        {
-            gameTime += Time.deltaTime;
-        }
-
         if (countingDown)
         {
             currentTime -= Time.deltaTime;
-            timerText.text = Mathf.Max(0, Mathf.CeilToInt(currentTime)).ToString();
+            timerText.text = Mathf.Max(0, Mathf.CeilToInt(currentTime)).ToString();  //No muestra numeros negativos
 
             if (currentTime <= 0)
             {
@@ -54,32 +46,11 @@ public class Timer : MonoBehaviour
         }
     }
 
-    public void StartGameTimer()
-    {
-        isTiming = true;
-        Debug.Log("arranco el tiempo");
-    }
-
-    public void StopGameTimer()
-    {
-        isTiming = false;
-        Debug.Log("finalizo el tiempo");
-    }
-
-    public void ResetGamerTimer()
-    {
-        gameTime = 0f;
-    }
-
-    public float GetGameTime()
-    {
-        return gameTime;
-    }
 
 
     private void TimerEnded()
     {
-        Debug.Log("Se acabo el tuiempo");
+        Debug.Log("Se acabo el tiempo");
         if (GameManager.Instance != null)
         {
             GameManager.Instance.TimeUp();
@@ -96,6 +67,7 @@ public class Timer : MonoBehaviour
     {
         countingDown = false;
         int timeLeft = Mathf.Max(0, Mathf.CeilToInt(currentTime));
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CalculateScore(timeLeft, (int)maxTime);
@@ -106,14 +78,5 @@ public class Timer : MonoBehaviour
         }
     }
 
-    public float GetMaxTime()
-    {
-        return maxTime;
-    }
-
-    public float GetCurrentTime()
-    {
-        return currentTime;
-    }
 
 }

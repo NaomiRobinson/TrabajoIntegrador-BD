@@ -10,7 +10,6 @@ public class AgeDropdown : MonoBehaviour
     public int maxAge = 100;
     void Start()
     {
-        
         FillAgesDropdown();
     }
     void FillAgesDropdown()
